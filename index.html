@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMP XAVERIUS 1 PALEMBANG - Coding & Tech Quiz Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0265d2',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom CSS animations and smooth transitions */
+    .fade-in {
+      animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100,116,139,0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100,116,139,0.5);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-full flex flex-col transition-colors duration-200">
+
+  <!-- TOP HEADER & NAVBAR -->
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo & Header -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-extrabold text-lg">
+          X1
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight text-blue-900 dark:text-blue-400 uppercase leading-none">
+            SMP XAVERIUS 1 PALEMBANG
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wide">
+            Interactive Coding & Technology Quiz Portal
+          </p>
+        </div>
+      </div>
+
+      <!-- Mode Selector & Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Role Switching Tabs -->
+        <nav class="flex bg-slate-100 dark:bg-slate-700/60 p-1 rounded-xl text-xs sm:text-sm font-semibold">
+          <button id="nav-participant-btn" onclick="switchRole('participant')" class="px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span class="hidden sm:inline">Mode</span> <span>Peserta</span>
+          </button>
+          <button id="nav-judge-btn" onclick="switchRole('judge')" class="px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+            <i class="fa-solid fa-user-shield"></i>
+            <span class="hidden sm:inline">Mode</span> <span>Juri / Guru</span>
+          </button>
+        </nav>
+
+        <!-- Dark Mode Toggle -->
+        <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Toggle Mode Gelap">
+          <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+          <i class="fa-solid fa-sun text-lg hidden dark:block text-amber-400"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+
+    <!-- ==================== PARTICIPANT VIEW ==================== -->
+    <div id="participant-view" class="fade-in space-y-6">
+      
+      <!-- STEP 1: REGISTRATION FORM -->
+      <div id="reg-card" class="max-w-xl mx-auto bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 sm:p-10 shadow-xl shadow-slate-200/50 dark:shadow-none">
+        
+        <div class="text-center mb-8">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 mb-3">
+            <i class="fa-solid fa-code mr-1.5"></i> Ujian Kompetensi Digital
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Selamat Datang Peserta
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+            Silakan lengkapi identitas Anda di bawah ini untuk memulai kuis 30 soal (Pengenalan MS Word hingga Visual Studio Code).
+          </p>
+        </div>
+
+        <form id="registration-form" onsubmit="startQuiz(event)" class="space-y-5">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+              Nama Depan <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-solid fa-user"></i>
+              </span>
+              <input type="text" id="input-first-name" required placeholder="Contoh: Budi"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm transition outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+              Nama Belakang <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-solid fa-signature"></i>
+              </span>
+              <input type="text" id="input-last-name" required placeholder="Contoh: Santoso"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm transition outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+              Alamat Email <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                <i class="fa-solid fa-envelope"></i>
+              </span>
+              <input type="email" id="input-email" required placeholder="nama@siswa.xaverius1.sch.id"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm transition outline-none">
+            </div>
+          </div>
+
+          <!-- Quiz Overview Badge Grid -->
+          <div class="grid grid-cols-3 gap-2 py-3">
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-2.5 rounded-xl text-center border border-slate-100 dark:border-slate-700">
+              <div class="text-lg font-extrabold text-blue-600 dark:text-blue-400">30</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Soal Total</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-2.5 rounded-xl text-center border border-slate-100 dark:border-slate-700">
+              <div class="text-lg font-extrabold text-amber-500">Word → VSC</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Tingkat Kesulitan</div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-2.5 rounded-xl text-center border border-slate-100 dark:border-slate-700">
+              <div class="text-lg font-extrabold text-emerald-500">30 Min</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Waktu Pengerjaan</div>
+            </div>
+          </div>
+
+          <button type="submit" 
+            class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition duration-200 flex items-center justify-center space-x-2 text-base">
+            <span>Berikutnya (Mulai Kuis)</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+      </div>
+
+      <!-- STEP 2: ACTIVE QUIZ VIEW -->
+      <div id="quiz-active-card" class="hidden max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-5 sm:p-8 shadow-xl">
+        
+        <!-- Top Status Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-700">
+          <div>
+            <span id="quiz-level-badge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+              Level 1: Dasar MS Word
+            </span>
+            <h3 id="participant-display-name" class="text-lg font-extrabold text-slate-900 dark:text-white mt-1">
+              -
+            </h3>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <!-- Timer Display -->
+            <div class="flex items-center space-x-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 px-3.5 py-1.5 rounded-xl font-mono text-sm font-bold">
+              <i class="fa-regular fa-clock animate-pulse"></i>
+              <span id="timer-display">30:00</span>
+            </div>
+
+            <!-- Progress Text -->
+            <div class="text-right">
+              <span class="text-xs text-slate-400 font-semibold uppercase">Soal</span>
+              <div class="text-base font-black text-slate-800 dark:text-slate-100">
+                <span id="current-q-num">1</span> / <span id="total-q-num">30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden my-5">
+          <div id="quiz-progress-bar" class="bg-blue-600 h-full w-0 transition-all duration-300 rounded-full"></div>
+        </div>
+
+        <!-- Question Text & Details -->
+        <div class="my-6">
+          <div class="flex items-center space-x-2 mb-2">
+            <span id="question-category" class="text-xs font-bold text-blue-600 dark:text-blue-400 tracking-wide uppercase">
+              Kategori Soal
+            </span>
+          </div>
+          <h4 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 leading-snug">
+            Teks pertanyaan akan tampil di sini...
+          </h4>
+          
+          <!-- Code snippet preview area if applicable -->
+          <div id="code-snippet-box" class="hidden mt-4 p-4 rounded-xl bg-slate-900 text-emerald-400 font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800">
+            <pre><code id="code-snippet-text"></code></pre>
+          </div>
+        </div>
+
+        <!-- Options Container -->
+        <div id="options-container" class="space-y-3 my-6">
+          <!-- Dynamic Radio Options Rendered Here -->
+        </div>
+
+        <!-- Quiz Navigation Controls -->
+        <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+          <button id="prev-btn" onclick="navigateQuestion(-1)" disabled
+            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center space-x-2">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+            <span>Sebelumnya</span>
+          </button>
+
+          <button id="next-btn" onclick="navigateQuestion(1)"
+            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-md shadow-blue-500/20 flex items-center space-x-2">
+            <span>Selanjutnya</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+
+          <button id="submit-btn" onclick="confirmSubmitQuiz()" class="hidden px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition shadow-md shadow-emerald-500/20 flex items-center space-x-2">
+            <span>Selesai & Kirim</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- STEP 3: RESULT SUMMARY VIEW -->
+      <div id="result-card" class="hidden max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 sm:p-10 shadow-xl text-center">
+        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+          Kuis Selesai!
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Hasil ujian Anda telah berhasil disimpan ke database lokal juri.
+        </p>
+
+        <!-- Final Score Card -->
+        <div class="my-8 p-6 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-700/60 max-w-sm mx-auto">
+          <div class="text-xs font-bold uppercase text-slate-400 tracking-wider">Skor Akhir Anda</div>
+          <div id="final-score" class="text-5xl font-black text-blue-600 dark:text-blue-400 my-2">0</div>
+          <div id="score-grade" class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+            Jawaban Benar: <span id="correct-count">0</span> / 30
+          </div>
+        </div>
+
+        <!-- Breakdown Details -->
+        <div class="grid grid-cols-2 gap-4 text-left mb-8 max-w-md mx-auto">
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-700/30 rounded-xl">
+            <div class="text-xs text-slate-400 font-medium">Nama Peserta</div>
+            <div id="res-participant-name" class="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">-</div>
+          </div>
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-700/30 rounded-xl">
+            <div class="text-xs text-slate-400 font-medium">Waktu Terpakai</div>
+            <div id="res-time-taken" class="font-bold text-sm text-slate-800 dark:text-slate-200">-</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button onclick="restartQuiz()" class="w-full sm:w-auto px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-slate-100 font-bold rounded-xl text-sm transition">
+            <i class="fa-solid fa-rotate-right mr-2"></i>Coba Lagi
+          </button>
+          <button onclick="switchRole('judge')" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition shadow-md shadow-blue-500/20">
+            <i class="fa-solid fa-chart-line mr-2"></i>Lihat Dashboard Juri
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== JUDGE / TEACHER DASHBOARD VIEW ==================== -->
+    <div id="judge-view" class="hidden fade-in space-y-6">
+      
+      <!-- Dashboard Top Summary Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+              Panel Juri / Guru
+            </span>
+            <span class="text-xs text-slate-400 font-medium">SMP XAVERIUS 1 PALEMBANG</span>
+          </div>
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            Dashboard Hasil & Bank Soal
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Monitor nilai siswa, tinjau jawaban, dan atur kuis secara real-time.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <button onclick="clearAllData()" class="px-4 py-2 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-trash"></i>
+            <span>Reset Data Hasil</span>
+          </button>
+          <button onclick="exportToCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-emerald-500/20 flex items-center space-x-1.5">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Ekspor Excel/CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Widgets -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Total Peserta</div>
+            <div id="stat-total-students" class="text-2xl font-black text-slate-800 dark:text-white">0</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-chart-simple"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Rata-Rata Nilai</div>
+            <div id="stat-avg-score" class="text-2xl font-black text-slate-800 dark:text-white">0</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Nilai Tertinggi</div>
+            <div id="stat-high-score" class="text-2xl font-black text-slate-800 dark:text-white">0</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-file-code"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase">Bank Soal</div>
+            <div id="stat-total-q" class="text-2xl font-black text-slate-800 dark:text-white">30</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tabs (Results vs Question Key Viewer) -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        
+        <div class="border-b border-slate-200 dark:border-slate-700 px-6 pt-4 flex space-x-6">
+          <button id="tab-btn-results" onclick="switchJudgeTab('results')" class="pb-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center space-x-2">
+            <i class="fa-solid fa-table-list"></i>
+            <span>Daftar Nilai Peserta</span>
+          </button>
+          <button id="tab-btn-questions" onclick="switchJudgeTab('questions')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 flex items-center space-x-2">
+            <i class="fa-solid fa-key"></i>
+            <span>Kunci Jawaban & Bank Soal</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: RESULTS TABLE & SEARCH -->
+        <div id="judge-tab-results" class="p-6">
+          
+          <!-- Search & Filter Controls -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div class="relative w-full sm:w-80">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+              </span>
+              <input type="text" id="search-student" onkeyup="renderJudgeTable()" placeholder="Cari nama atau email..."
+                class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+              <label class="text-xs font-semibold text-slate-500 whitespace-nowrap">Urutkan:</label>
+              <select id="sort-results" onchange="renderJudgeTable()" class="w-full sm:w-auto bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold outline-none">
+                <option value="newest">Terbaru</option>
+                <option value="highest">Nilai Tertinggi</option>
+                <option value="lowest">Nilai Terendah</option>
+                <option value="name">Nama A-Z</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-900/80 text-slate-500 dark:text-slate-400 uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-700">
+                <tr>
+                  <th class="px-4 py-3 font-bold">No</th>
+                  <th class="px-4 py-3 font-bold">Peserta</th>
+                  <th class="px-4 py-3 font-bold">Email</th>
+                  <th class="px-4 py-3 font-bold text-center">Jawaban Benar</th>
+                  <th class="px-4 py-3 font-bold text-center">Skor Akhir</th>
+                  <th class="px-4 py-3 font-bold">Tanggal & Waktu</th>
+                  <th class="px-4 py-3 font-bold text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="judge-results-tbody" class="divide-y divide-slate-200 dark:divide-slate-700">
+                <!-- Dynamic Rows Renders Here -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- TAB 2: QUESTIONS & ANSWER KEYS VIEWER -->
+        <div id="judge-tab-questions" class="hidden p-6 space-y-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-extrabold text-slate-800 dark:text-slate-100 text-lg">Master Bank Soal (30 Soal)</h3>
+            <span class="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full font-bold">Progression: Easy -> Hard</span>
+          </div>
+
+          <div id="question-key-list" class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+            <!-- Dynamic Questions List -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+    <p>© 2026 SMP XAVERIUS 1 PALEMBANG • Portal Ujian & Kuis Coding Interaktif</p>
+  </footer>
+
+  <!-- DETAIL SUBMISSION MODAL FOR JUDGE -->
+  <div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 max-w-2xl w-full p-6 shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+        <div>
+          <h3 id="modal-student-name" class="font-extrabold text-lg text-slate-900 dark:text-white">Rincian Jawaban</h3>
+          <p id="modal-student-email" class="text-xs text-slate-400"></p>
+        </div>
+        <button onclick="closeModal()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div id="modal-content" class="overflow-y-auto py-4 space-y-4 flex-grow my-2 pr-2">
+        <!-- Details Loaded Dynamically -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       30 COMPREHENSIVE QUESTIONS (Progression Easy Word -> High Level VSC)
+       ========================================================================== */
+    const QUIZ_QUESTIONS = [
+      // --- LEVEL 1: MS WORD & BASIC COMPUTING (1-6) ---
+      {
+        id: 1,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Kombinasi tombol keyboard manakah yang digunakan untuk menebalkan teks (Bold) pada Microsoft Word?",
+        options: ["Ctrl + B", "Ctrl + I", "Ctrl + U", "Ctrl + P"],
+        answer: 0,
+        explanation: "Ctrl + B digunakan untuk menebalkan teks (Bold)."
+      },
+      {
+        id: 2,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Ikon berbentuk kertas ganda atau tombol Ctrl + C pada Microsoft Word berfungsi untuk...",
+        options: ["Memotong teks (Cut)", "Menyalin teks (Copy)", "Menempel teks (Paste)", "Menghapus teks"],
+        answer: 1,
+        explanation: "Ctrl + C berfungsi untuk Copy (menyalin teks)."
+      },
+      {
+        id: 3,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Fitur pada MS Word yang digunakan untuk membuat tulisan rata tengah pada paragraf adalah...",
+        options: ["Align Left", "Center (Ctrl + E)", "Align Right", "Justify"],
+        answer: 1,
+        explanation: "Center (Ctrl + E) menyelaraskan teks ke posisi tengah paragraf."
+      },
+      {
+        id: 4,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Ekstensi file standar untuk dokumen Microsoft Word versi modern adalah...",
+        options: [".docx", ".xlsx", ".pptx", ".txt"],
+        answer: 0,
+        explanation: ".docx adalah format dokumen Microsoft Word."
+      },
+      {
+        id: 5,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Menu ribbon tempat kita bisa menambahkan Tabel, Gambar, dan Shapes pada MS Word adalah...",
+        options: ["Home", "Insert", "Layout", "View"],
+        answer: 1,
+        explanation: "Menu Insert berisi opsi menyisipkan gambar, tabel, bentuk, dan media."
+      },
+      {
+        id: 6,
+        category: "1. Basic Computing / MS Word",
+        levelBadge: "Level 1: Dasar MS Word",
+        question: "Tombol pintas untuk membatalkan perintah terakhir (Undo) di MS Word maupun aplikasi lain adalah...",
+        options: ["Ctrl + Y", "Ctrl + S", "Ctrl + Z", "Ctrl + A"],
+        answer: 2,
+        explanation: "Ctrl + Z digunakan untuk membatalkan aksi (Undo)."
+      },
+
+      // --- LEVEL 2: HTML & WEB BASICS (7-12) ---
+      {
+        id: 7,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Singkatan resmi dari HTML dalam dunia pemrograman web adalah...",
+        options: [
+          "Hyper Text Markup Language",
+          "High Tech Modern Language",
+          "Hyper Transfer Mode Link",
+          "Home Tool Markup Level"
+        ],
+        answer: 0,
+        explanation: "HTML singkatan dari Hyper Text Markup Language."
+      },
+      {
+        id: 8,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Tag HTML yang digunakan untuk membuat judul (heading) dengan ukuran paling besar adalah...",
+        options: ["<h6>", "<head>", "<h1>", "<header>"],
+        answer: 2,
+        explanation: "<h1> adalah elemen heading terbesar."
+      },
+      {
+        id: 9,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Tag yang benar untuk membuat sebuah tautan / hyperlink pada HTML adalah...",
+        options: [
+          "<a href='url'>Link</a>",
+          "<link src='url'>Link</link>",
+          "<hyperlink>Link</hyperlink>",
+          "<url link='url'>Link</url>"
+        ],
+        answer: 0,
+        explanation: "Tag <a> dengan atribut href digunakan untuk hyperlink."
+      },
+      {
+        id: 10,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Atribut mana yang digunakan untuk menampilkan gambar di HTML beserta sumber filenya?",
+        options: [
+          "<img url='gambar.jpg'>",
+          "<img src='gambar.jpg'>",
+          "<image source='gambar.jpg'>",
+          "<picture src='gambar.jpg'>"
+        ],
+        answer: 1,
+        explanation: "Tag <img> menggunakan atribut 'src' (source)."
+      },
+      {
+        id: 11,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Tag yang digunakan untuk membuat daftar berurutan (numbered list 1, 2, 3) di HTML adalah...",
+        options: ["<ul>", "<li>", "<ol>", "<list>"],
+        answer: 2,
+        explanation: "<ol> singkatan dari Ordered List (daftar berurutan)."
+      },
+      {
+        id: 12,
+        category: "2. Pengenalan Web & HTML",
+        levelBadge: "Level 2: Web Basics",
+        question: "Elemen dasar HTML mana yang berisi informasi metadata seperti judul dokumen web (title)?",
+        options: ["<body>", "<head>", "<footer>", "<section>"],
+        answer: 1,
+        explanation: "<head> menyimpan metadata dokumen HTML."
+      },
+
+      // --- LEVEL 3: CSS STYLING (13-18) ---
+      {
+        id: 13,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Singkatan dari CSS dalam pengembangan tampilan web adalah...",
+        options: [
+          "Cascading Style Sheets",
+          "Computer Style Syntax",
+          "Creative Styling Script",
+          "Color Style System"
+        ],
+        answer: 0,
+        explanation: "CSS adalah Cascading Style Sheets."
+      },
+      {
+        id: 14,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Properti CSS manakah yang digunakan untuk mengubah warna latar belakang sebuah elemen?",
+        options: ["color", "background-color", "bg-style", "fill-color"],
+        answer: 1,
+        explanation: "background-color menentukan warna latar belakang."
+      },
+      {
+        id: 15,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Simbol apakah yang digunakan di CSS untuk memilih elemen berdasarkan ID elemen tersebut?",
+        options: ["Titik (.)", "Pagar (#)", "Bintang (*)", "At (@)"],
+        answer: 1,
+        explanation: "Simbol # digunakan untuk ID selector (misal: #header)."
+      },
+      {
+        id: 16,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Properti CSS mana yang digunakan untuk mengubah ukuran teks?",
+        options: ["text-size", "font-size", "text-style", "font-weight"],
+        answer: 1,
+        explanation: "font-size mengatur besar kecilnya huruf/teks."
+      },
+      {
+        id: 17,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Bagaimana cara menyembunyikan elemen secara penuh agar tidak tampak di layar menggunakan CSS?",
+        options: [
+          "display: none;",
+          "visibility: transparent;",
+          "opacity: hide;",
+          "hidden: true;"
+        ],
+        answer: 0,
+        explanation: "display: none menyembunyikan elemen dari dokumen."
+      },
+      {
+        id: 18,
+        category: "3. Styling CSS",
+        levelBadge: "Level 3: Pemrograman CSS",
+        question: "Di dalam CSS Box Model, ruang kosong di DALAM batas elemen (antara konten dan border) disebut...",
+        options: ["Margin", "Padding", "Border", "Outline"],
+        answer: 1,
+        explanation: "Padding adalah ruang dalam, sedangkan Margin adalah ruang luar."
+      },
+
+      // --- LEVEL 4: JAVASCRIPT LOGIC (19-24) ---
+      {
+        id: 19,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Kata kunci (keyword) modern mana yang digunakan untuk mendeklarasikan variabel yang nilainya TETAP (tidak dapat diubah)?",
+        options: ["var", "let", "const", "static"],
+        answer: 2,
+        codeSnippet: "const pi = 3.14;\npi = 3.15; // Error!",
+        explanation: "const digunakan untuk konstanta yang nilainya konstan."
+      },
+      {
+        id: 20,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Apa hasil dari perintah JavaScript berikut: console.log(5 + '5'); ?",
+        options: ["10", "'55'", "TypeError", "NaN"],
+        answer: 1,
+        codeSnippet: "console.log(5 + '5');",
+        explanation: "Penjumlahan angka dan string akan menghasilkan penggabungan string ('55')."
+      },
+      {
+        id: 21,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Perintah mana yang digunakan untuk mencetak pesan/debugging ke dalam Developer Console browser?",
+        options: [
+          "print.log()",
+          "console.log()",
+          "document.writeLog()",
+          "system.out.println()"
+        ],
+        answer: 1,
+        explanation: "console.log() mencetak pesan ke browser developer console."
+      },
+      {
+        id: 22,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Manakah sintaks fungsi tanda panah (Arrow Function) yang valid di JavaScript?",
+        options: [
+          "const hitung = () => { return 10; };",
+          "function -> hitung() { return 10; }",
+          "def hitung() => 10",
+          "func hitung = => { 10 }"
+        ],
+        answer: 0,
+        codeSnippet: "const hitung = () => {\n  return 10;\n};",
+        explanation: "() => {} adalah sintaks arrow function standar ES6."
+      },
+      {
+        id: 23,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Struktur perulangan (loop) mana yang tepat untuk mengulang kode selama kondisi bernilai true?",
+        options: ["if-else", "while loop", "switch case", "break statement"],
+        answer: 1,
+        explanation: "while loop akan mengeksekusi blok kode selama kondisi bernilai true."
+      },
+      {
+        id: 24,
+        category: "4. Logika JavaScript",
+        levelBadge: "Level 4: JavaScript & Logika",
+        question: "Metode Array JavaScript mana yang digunakan untuk menambah item baru di akhir barisan array?",
+        options: ["push()", "pop()", "shift()", "unshift()"],
+        answer: 0,
+        codeSnippet: "let buah = ['apel'];\nbuah.push('pisang');",
+        explanation: "push() menambahkan elemen di bagian akhir array."
+      },
+
+      // --- LEVEL 5: VISUAL STUDIO CODE & HIGH LEVEL TOOLS (25-30) ---
+      {
+        id: 25,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Kombinasi tombol pintas (shortcut) untuk membuka Command Palette utama di Visual Studio Code adalah...",
+        options: [
+          "Ctrl + Shift + P (atau Cmd+Shift+P)",
+          "Ctrl + Alt + N",
+          "Alt + F4",
+          "Ctrl + J"
+        ],
+        answer: 0,
+        explanation: "Ctrl + Shift + P membuka Command Palette untuk semua perintah VSC."
+      },
+      {
+        id: 26,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Fitur bawaan VSC yang memberikan saran otomatis, autocompletion kode, dan sintaks hint disebut...",
+        options: ["Live Server", "IntelliSense", "Emmet Abbreviation", "Git Graph"],
+        answer: 1,
+        explanation: "IntelliSense menyediakan autocompletion dan hint sintaks cerdas."
+      },
+      {
+        id: 27,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Di Visual Studio Code, pintasan sintaks bawaan untuk membuat kerangka dasar HTML5 secara instan adalah...",
+        options: ["html:5 atau !", "doc:new", "create-html", "html-template"],
+        answer: 0,
+        codeSnippet: "! [Lalu tekan Tab/Enter]",
+        explanation: "Emmet ! atau html:5 langsung menghasilkan boiler plate HTML5 lengkap."
+      },
+      {
+        id: 28,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Manakah shortcut VSC untuk membuka/menutup Terminal terintegrasi (Integrated Terminal) bawaan?",
+        options: ["Ctrl + ` (Backtick)", "Ctrl + T", "Alt + T", "Ctrl + Space"],
+        answer: 0,
+        explanation: "Ctrl + ` (backtick) berfungsi toggle terminal terintegrasi di VSC."
+      },
+      {
+        id: 29,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Ekstensi populer Visual Studio Code yang memungkingkan reload otomatis browser saat file HTML/CSS disimpan adalah...",
+        options: ["Prettier", "Live Server", "ESLint", "Auto Rename Tag"],
+        answer: 1,
+        explanation: "Live Server menjalankan lokal web server dengan fitur Auto Reload."
+      },
+      {
+        id: 30,
+        category: "5. High Level: Visual Studio Code",
+        levelBadge: "Level 5: High Level VSC",
+        question: "Ikon berbentuk cabang pohon pada sidebar kiri Visual Studio Code mewakili panel versi kontrol...",
+        options: ["Extensions Marketplace", "Source Control (Git)", "Debug & Run", "Explorer"],
+        answer: 1,
+        explanation: "Panel Source Control terintegrasi langsung dengan sistem Git."
+      }
+    ];
+
+    /* ==========================================================================
+       APPLICATION STATE MANAGEMENT
+       ========================================================================== */
+    let currentParticipant = {
+      firstName: "",
+      lastName: "",
+      email: ""
+    };
+
+    let quizState = {
+      currentIndex: 0,
+      userAnswers: new Array(QUIZ_QUESTIONS.length).fill(null),
+      timerSeconds: 30 * 60, // 30 minutes
+      timerInterval: null,
+      startTime: null,
+      endTime: null
+    };
+
+    // Initialize LocalStorage Data
+    function getStoredResults() {
+      const data = localStorage.getItem('xaverius_quiz_results');
+      return data ? JSON.parse(data) : [];
+    }
+
+    function saveResultToStorage(result) {
+      const current = getStoredResults();
+      current.push(result);
+      localStorage.setItem('xaverius_quiz_results', JSON.stringify(current));
+    }
+
+    /* ==========================================================================
+       UI NAVIGATION & ROLE SWITCHING
+       ========================================================================== */
+    function switchRole(role) {
+      const participantView = document.getElementById('participant-view');
+      const judgeView = document.getElementById('judge-view');
+      const navParticipant = document.getElementById('nav-participant-btn');
+      const navJudge = document.getElementById('nav-judge-btn');
+
+      if (role === 'participant') {
+        participantView.classList.remove('hidden');
+        judgeView.classList.add('hidden');
+        
+        navParticipant.className = "px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm font-bold";
+        navJudge.className = "px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium";
+      } else {
+        participantView.classList.add('hidden');
+        judgeView.classList.remove('hidden');
+
+        navJudge.className = "px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-sm font-bold";
+        navParticipant.className = "px-3 py-1.5 rounded-lg transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium";
+
+        // Refresh Judge Dashboard Data
+        renderJudgeDashboard();
+      }
+    }
+
+    /* Dark Mode Toggle */
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    /* ==========================================================================
+       PARTICIPANT QUIZ LOGIC
+       ========================================================================== */
+    function startQuiz(e) {
+      e.preventDefault();
+      
+      const fName = document.getElementById('input-first-name').value.trim();
+      const lName = document.getElementById('input-last-name').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+
+      if (!fName || !lName || !email) {
+        alert('Mohon isi semua data registrasi dengan benar.');
+        return;
+      }
+
+      currentParticipant = { firstName: fName, lastName: lName, email: email };
+
+      // Update UI Views
+      document.getElementById('reg-card').classList.add('hidden');
+      document.getElementById('quiz-active-card').classList.remove('hidden');
+      document.getElementById('participant-display-name').innerText = `${fName} ${lName}`;
+
+      // Reset state
+      quizState.currentIndex = 0;
+      quizState.userAnswers = new Array(QUIZ_QUESTIONS.length).fill(null);
+      quizState.timerSeconds = 30 * 60;
+      quizState.startTime = new Date();
+
+      // Start Countdown Timer
+      startTimer();
+
+      // Render Question 1
+      renderQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(quizState.timerInterval);
+      const timerDisplay = document.getElementById('timer-display');
+
+      quizState.timerInterval = setInterval(() => {
+        quizState.timerSeconds--;
+        
+        const mins = Math.floor(quizState.timerSeconds / 60);
+        const secs = quizState.timerSeconds % 60;
+        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (quizState.timerSeconds <= 0) {
+          clearInterval(quizState.timerInterval);
+          alert('Waktu pengerjaan habis! Kuis akan dikirim otomatis.');
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = QUIZ_QUESTIONS[quizState.currentIndex];
+      
+      // Update Texts
+      document.getElementById('quiz-level-badge').innerText = q.levelBadge;
+      document.getElementById('current-q-num').innerText = quizState.currentIndex + 1;
+      document.getElementById('total-q-num').innerText = QUIZ_QUESTIONS.length;
+      document.getElementById('question-category').innerText = q.category;
+      document.getElementById('question-text').innerText = q.question;
+
+      // Code Snippet handling
+      const codeBox = document.getElementById('code-snippet-box');
+      const codeText = document.getElementById('code-snippet-text');
+      if (q.codeSnippet) {
+        codeBox.classList.remove('hidden');
+        codeText.innerText = q.codeSnippet;
+      } else {
+        codeBox.classList.add('hidden');
+      }
+
+      // Progress Bar Update
+      const progressPercent = ((quizState.currentIndex + 1) / QUIZ_QUESTIONS.length) * 100;
+      document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+      // Render Options
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const isSelected = quizState.userAnswers[quizState.currentIndex] === idx;
+        const optEl = document.createElement('label');
+        optEl.className = `flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+          isSelected 
+            ? 'border-blue-600 bg-blue-50/80 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 font-semibold shadow-sm' 
+            : 'border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50/50 dark:bg-slate-900/40'
+        }`;
+
+        optEl.innerHTML = `
+          <input type="radio" name="quiz-opt" value="${idx}" ${isSelected ? 'checked' : ''} 
+            onchange="selectOption(${idx})" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+          <span class="ml-3.5 text-sm sm:text-base">${opt}</span>
+        `;
+        optionsContainer.appendChild(optEl);
+      });
+
+      // Button Controls Visibility
+      document.getElementById('prev-btn').disabled = quizState.currentIndex === 0;
+
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+
+      if (quizState.currentIndex === QUIZ_QUESTIONS.length - 1) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+    }
+
+    function selectOption(idx) {
+      quizState.userAnswers[quizState.currentIndex] = idx;
+      renderQuestion(); // re-render to update selected UI border
+    }
+
+    function navigateQuestion(direction) {
+      quizState.currentIndex += direction;
+      renderQuestion();
+    }
+
+    function confirmSubmitQuiz() {
+      const unanswered = quizState.userAnswers.filter(a => a === null).length;
+      if (unanswered > 0) {
+        if (!confirm(`Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin menyelesaikan kuis?`)) {
+          return;
+        }
+      } else {
+        if (!confirm('Apakah Anda yakin ingin mengirim jawaban sekarang?')) {
+          return;
+        }
+      }
+      finishQuiz();
+    }
+
+    function finishQuiz() {
+      clearInterval(quizState.timerInterval);
+      quizState.endTime = new Date();
+
+      // Calculate Score
+      let correctCount = 0;
+      QUIZ_QUESTIONS.forEach((q, idx) => {
+        if (quizState.userAnswers[idx] === q.answer) {
+          correctCount++;
+        }
+      });
+
+      const finalScore = Math.round((correctCount / QUIZ_QUESTIONS.length) * 100);
+
+      // Time taken calculation
+      const durationMs = quizState.endTime - quizState.startTime;
+      const durationMins = Math.floor(durationMs / 60000);
+      const durationSecs = Math.floor((durationMs % 60000) / 1000);
+      const timeFormatted = `${durationMins} mnt ${durationSecs} detik`;
+
+      // Save to LocalStorage
+      const record = {
+        id: Date.now(),
+        participant: currentParticipant,
+        score: finalScore,
+        correctCount: correctCount,
+        totalQuestions: QUIZ_QUESTIONS.length,
+        timeTaken: timeFormatted,
+        timestamp: new Date().toLocaleString('id-ID'),
+        answers: quizState.userAnswers
+      };
+
+      saveResultToStorage(record);
+
+      // Render Result Card UI
+      document.getElementById('quiz-active-card').classList.add('hidden');
+      document.getElementById('result-card').classList.remove('hidden');
+
+      document.getElementById('final-score').innerText = finalScore;
+      document.getElementById('correct-count').innerText = correctCount;
+      document.getElementById('res-participant-name').innerText = `${currentParticipant.firstName} ${currentParticipant.lastName}`;
+      document.getElementById('res-time-taken').innerText = timeFormatted;
+    }
+
+    function restartQuiz() {
+      document.getElementById('result-card').classList.add('hidden');
+      document.getElementById('reg-card').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       JUDGE / TEACHER DASHBOARD LOGIC
+       ========================================================================= */
+    function switchJudgeTab(tab) {
+      const tabResults = document.getElementById('judge-tab-results');
+      const tabQuestions = document.getElementById('judge-tab-questions');
+      const btnResults = document.getElementById('tab-btn-results');
+      const btnQuestions = document.getElementById('tab-btn-questions');
+
+      if (tab === 'results') {
+        tabResults.classList.remove('hidden');
+        tabQuestions.classList.add('hidden');
+        btnResults.className = "pb-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center space-x-2";
+        btnQuestions.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 flex items-center space-x-2";
+      } else {
+        tabResults.classList.add('hidden');
+        tabQuestions.classList.remove('hidden');
+        btnQuestions.className = "pb-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 flex items-center space-x-2";
+        btnResults.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 flex items-center space-x-2";
+        renderQuestionKeys();
+      }
+    }
+
+    function renderJudgeDashboard() {
+      const results = getStoredResults();
+
+      // Stats
+      document.getElementById('stat-total-students').innerText = results.length;
+      
+      if (results.length > 0) {
+        const avg = Math.round(results.reduce((acc, curr) => acc + curr.score, 0) / results.length);
+        const high = Math.max(...results.map(r => r.score));
+        document.getElementById('stat-avg-score').innerText = avg;
+        document.getElementById('stat-high-score').innerText = high;
+      } else {
+        document.getElementById('stat-avg-score').innerText = "0";
+        document.getElementById('stat-high-score').innerText = "0";
+      }
+
+      renderJudgeTable();
+    }
+
+    function renderJudgeTable() {
+      let results = getStoredResults();
+      const searchQuery = document.getElementById('search-student').value.toLowerCase();
+      const sortBy = document.getElementById('sort-results').value;
+
+      // Filter Search
+      if (searchQuery) {
+        results = results.filter(r => 
+          `${r.participant.firstName} ${r.participant.lastName}`.toLowerCase().includes(searchQuery) ||
+          r.participant.email.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      // Sort
+      if (sortBy === 'newest') {
+        results.sort((a, b) => b.id - a.id);
+      } else if (sortBy === 'highest') {
+        results.sort((a, b) => b.score - a.score);
+      } else if (sortBy === 'lowest') {
+        results.sort((a, b) => a.score - b.score);
+      } else if (sortBy === 'name') {
+        results.sort((a, b) => a.participant.firstName.localeCompare(b.participant.firstName));
+      }
+
+      const tbody = document.getElementById('judge-results-tbody');
+      tbody.innerHTML = '';
+
+      if (results.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-slate-400 font-medium">
+              Belum ada data hasil ujian peserta.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      results.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition";
+
+        // Score Badge Color
+        let scoreBadgeClass = "bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400";
+        if (r.score >= 80) scoreBadgeClass = "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400";
+        else if (r.score >= 60) scoreBadgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400";
+
+        tr.innerHTML = `
+          <td class="px-4 py-3.5 font-bold text-slate-400 text-xs">${idx + 1}</td>
+          <td class="px-4 py-3.5 font-bold text-slate-800 dark:text-slate-100">
+            ${r.participant.firstName} ${r.participant.lastName}
+          </td>
+          <td class="px-4 py-3.5 text-slate-500 dark:text-slate-400 text-xs">${r.participant.email}</td>
+          <td class="px-4 py-3.5 text-center font-semibold text-slate-700 dark:text-slate-300">
+            ${r.correctCount} / ${r.totalQuestions}
+          </td>
+          <td class="px-4 py-3.5 text-center">
+            <span class="px-2.5 py-1 rounded-lg text-xs font-black ${scoreBadgeClass}">
+              ${r.score}
+            </span>
+          </td>
+          <td class="px-4 py-3.5 text-slate-400 text-xs">${r.timestamp}</td>
+          <td class="px-4 py-3.5 text-center">
+            <button onclick="viewSubmissionDetail(${r.id})" class="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-eye mr-1"></i> Detail
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderQuestionKeys() {
+      const container = document.getElementById('question-key-list');
+      container.innerHTML = '';
+
+      QUIZ_QUESTIONS.forEach((q, idx) => {
+        const item = document.createElement('div');
+        item.className = "p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700/60";
+
+        let optionsHtml = '';
+        q.options.forEach((opt, oIdx) => {
+          const isCorrect = oIdx === q.answer;
+          optionsHtml += `
+            <div class="text-xs p-2 rounded-lg ${isCorrect ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800' : 'text-slate-600 dark:text-slate-400'}">
+              ${isCorrect ? '✓ ' : ''}${opt}
+            </div>
+          `;
+        });
+
+        item.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase">Soal ${idx + 1} • ${q.category}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${q.levelBadge}</span>
+          </div>
+          <p class="font-bold text-sm text-slate-800 dark:text-slate-100 mb-2">${q.question}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 my-2">
+            ${optionsHtml}
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 italic mt-2">
+            <i class="fa-solid fa-circle-info mr-1"></i> ${q.explanation}
+          </p>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function viewSubmissionDetail(id) {
+      const results = getStoredResults();
+      const item = results.find(r => r.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-student-name').innerText = `${item.participant.firstName} ${item.participant.lastName} (Skor: ${item.score})`;
+      document.getElementById('modal-student-email').innerText = `${item.participant.email} • Waktu: ${item.timeTaken}`;
+
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = '';
+
+      QUIZ_QUESTIONS.forEach((q, idx) => {
+        const userAnsIdx = item.answers[idx];
+        const isCorrect = userAnsIdx === q.answer;
+
+        const qBox = document.createElement('div');
+        qBox.className = `p-3.5 rounded-xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20 dark:border-emerald-900' : 'border-rose-200 bg-rose-50/40 dark:bg-rose-950/20 dark:border-rose-900'}`;
+
+        const userAnsText = userAnsIdx !== null ? q.options[userAnsIdx] : 'Tidak Dijawab';
+        const correctAnsText = q.options[q.answer];
+
+        qBox.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-bold mb-1">
+            <span class="${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}">
+              Soal ${idx + 1}: ${isCorrect ? 'BENAR ✓' : 'SALAH ✗'}
+            </span>
+          </div>
+          <p class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">${q.question}</p>
+          <div class="text-xs space-y-1">
+            <div class="${isCorrect ? 'text-emerald-800 dark:text-emerald-300' : 'text-rose-800 dark:text-rose-300'}">
+              Jawaban Siswa: <span class="font-semibold">${userAnsText}</span>
+            </div>
+            ${!isCorrect ? `<div class="text-emerald-700 dark:text-emerald-400">Jawaban Seharusnya: <span class="font-semibold">${correctAnsText}</span></div>` : ''}
+          </div>
+        `;
+        modalContent.appendChild(qBox);
+      });
+
+      document.getElementById('detail-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    function clearAllData() {
+      if (confirm('Apakah Anda yakin ingin menghapus SELURUH data hasil kuis peserta?')) {
+        localStorage.removeItem('xaverius_quiz_results');
+        renderJudgeDashboard();
+      }
+    }
+
+    function exportToCSV() {
+      const results = getStoredResults();
+      if (results.length === 0) {
+        alert('Tidak ada data untuk diekspor.');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "No,Nama Depan,Nama Belakang,Email,Jawaban Benar,Total Soal,Skor Akhir,Waktu Terpakai,Tanggal\n";
+
+      results.forEach((r, idx) => {
+        const row = [
+          idx + 1,
+          `"${r.participant.firstName}"`,
+          `"${r.participant.lastName}"`,
+          `"${r.participant.email}"`,
+          r.correctCount,
+          r.totalQuestions,
+          r.score,
+          `"${r.timeTaken}"`,
+          `"${r.timestamp}"`
+        ].join(",");
+        csvContent += row + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Hasil_Kuis_SMP_Xaverius_1_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
