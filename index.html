@@ -4,255 +4,408 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ujian Coding | SMP Xaverius 1 Palembang</title>
+<script>
+  // Terapkan tema sebelum halaman tampil agar tidak berkedip
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("xaverius_theme"); } catch (e) {}
+    if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (t === "dark") document.documentElement.classList.add("dark");
+  })();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: "class" };</script>
 <style>
-body{font-family:Arial,sans-serif}
-.hidden{display:none!important}
-.option{display:block;padding:14px;margin:10px 0;border:1px solid #475569;border-radius:10px;cursor:pointer}
-.option:hover{background:#334155}
-.option input{margin-right:10px}
+  body { font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
+  .hidden { display: none !important; }
 </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen">
+<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
 
-<header class="bg-indigo-700 p-5 text-center">
-<h1 class="text-2xl font-bold">SMP XAVERIUS 1 PALEMBANG</h1>
-<p>Coding & Technology Examination</p>
+<!-- Bilah atas: kiri = nomor soal, tengah = timer, kanan = mode gelap -->
+<header class="sticky top-0 z-10 bg-white/95 dark:bg-slate-950/95 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+  <div class="max-w-3xl mx-auto grid grid-cols-3 items-center px-4 py-3">
+    <div id="progress" class="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">SMP Xaverius 1</div>
+    <div id="timer" class="text-center text-xl sm:text-2xl font-bold tabular-nums text-indigo-700 dark:text-indigo-300"></div>
+    <div class="justify-self-end">
+      <button id="themeToggle" type="button" aria-label="Ganti mode terang/gelap"
+        class="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <span id="themeIcon">🌙</span> <span id="themeLabel" class="hidden sm:inline">Gelap</span>
+      </button>
+    </div>
+  </div>
 </header>
 
-<main class="max-w-3xl mx-auto p-5">
+<main class="max-w-3xl mx-auto p-4 sm:p-5">
 
-<section id="registration" class="bg-slate-900 p-6 rounded-xl mt-5">
-<h2 class="text-xl font-bold mb-4">Pendaftaran Peserta</h2>
-<form id="registrationForm" class="space-y-4">
-<input id="firstName" required maxlength="50" placeholder="Nama depan"
-class="w-full p-3 rounded text-black">
-<input id="lastName" required maxlength="50" placeholder="Nama belakang"
-class="w-full p-3 rounded text-black">
-<input id="email" type="email" required maxlength="150" placeholder="Email"
-class="w-full p-3 rounded text-black">
-<button class="w-full bg-indigo-600 p-3 rounded font-bold">
-Mulai Ujian
-</button>
-</form>
-<p class="text-slate-400 text-sm mt-4">
-25 soal pilihan ganda dan 5 soal esai. Waktu pengerjaan 30 menit.
-</p>
-</section>
+  <!-- Pendaftaran -->
+  <section id="registration" class="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+    <h1 class="text-2xl font-bold">Ujian Coding &amp; Teknologi</h1>
+    <p class="text-slate-600 dark:text-slate-400 mt-1">SMP Xaverius 1 Palembang</p>
 
-<section id="exam" class="hidden bg-slate-900 p-6 rounded-xl mt-5">
-<div class="flex justify-between items-center mb-5">
-<span id="progress"></span>
-<span id="timer" class="text-yellow-400 font-bold text-xl">30:00</span>
-</div>
+    <form id="registrationForm" class="space-y-4 mt-6" novalidate>
+      <div>
+        <label for="firstName" class="block text-sm font-medium mb-1">Nama depan</label>
+        <input id="firstName" required maxlength="50" autocomplete="given-name"
+          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div>
+        <label for="lastName" class="block text-sm font-medium mb-1">Nama belakang</label>
+        <input id="lastName" required maxlength="50" autocomplete="family-name"
+          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium mb-1">Email</label>
+        <input id="email" type="email" required maxlength="150" autocomplete="email"
+          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <p id="formError" class="hidden text-sm text-red-600 dark:text-red-400"></p>
+      <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        Mulai ujian
+      </button>
+    </form>
 
-<div id="questionContainer"></div>
+    <ul class="text-slate-600 dark:text-slate-400 text-sm mt-6 space-y-1 list-disc pl-5">
+      <li>30 soal: 25 pilihan ganda dan 5 esai.</li>
+      <li>Waktu pengerjaan 30 menit.</li>
+      <li>Ujian hanya bisa dikerjakan satu kali per email.</li>
+    </ul>
+  </section>
 
-<div class="flex justify-between gap-3 mt-6">
-<button id="previous" class="bg-slate-700 px-4 py-3 rounded">
-Sebelumnya
-</button>
-<button id="next" class="bg-indigo-600 px-4 py-3 rounded">
-Berikutnya
-</button>
-<button id="finish" class="hidden bg-green-600 px-4 py-3 rounded">
-Kumpulkan
-</button>
-</div>
+  <!-- Ujian -->
+  <section id="exam" class="hidden mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm">
+    <div id="questionContainer"></div>
 
-<p class="text-slate-400 text-sm mt-5">
-Periksa jawaban sebelum mengumpulkan ujian.
-</p>
-</section>
+    <div class="flex justify-between gap-3 mt-6">
+      <button id="previous" type="button" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-4 py-3 rounded-lg font-medium disabled:opacity-40 disabled:cursor-not-allowed">Sebelumnya</button>
+      <button id="next" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg font-medium">Berikutnya</button>
+      <button id="finish" type="button" class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium">Kumpulkan</button>
+    </div>
 
-<section id="result" class="hidden bg-slate-900 p-6 rounded-xl mt-5 text-center">
-<h2 class="text-2xl font-bold mb-4">Ujian Selesai</h2>
-<p id="resultText" class="text-lg"></p>
-<p class="text-slate-400 mt-4">
-Nilai esai akan diperiksa oleh guru.
-</p>
-</section>
+    <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
+      <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Lompat ke soal (warna biru = sudah dijawab):</p>
+      <div id="navGrid" class="flex flex-wrap gap-2"></div>
+    </div>
+  </section>
+
+  <!-- Hasil -->
+  <section id="result" class="hidden mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center shadow-sm">
+    <h2 class="text-2xl font-bold mb-4">Ujian selesai</h2>
+    <p class="text-slate-600 dark:text-slate-400">Nilai pilihan ganda kamu</p>
+    <p id="resultScore" class="text-5xl font-bold text-indigo-700 dark:text-indigo-300 my-3"></p>
+    <p id="resultText" class="text-lg"></p>
+    <p class="text-slate-600 dark:text-slate-400 mt-6">Jawaban esai akan diperiksa oleh guru.</p>
+  </section>
 
 </main>
 
 <script>
+/* ---------- Soal ---------- */
 const questions = [
-{type:"pg",category:"Microsoft Word",q:"Microsoft Word digunakan untuk...",o:["Mengolah angka","Mengolah dokumen teks","Mengedit video","Membuat animasi"],a:1},
-{type:"pg",category:"Microsoft Word",q:"Shortcut untuk menyimpan dokumen adalah...",o:["Ctrl + P","Ctrl + C","Ctrl + S","Ctrl + V"],a:2},
-{type:"pg",category:"Microsoft Word",q:"Shortcut untuk menebalkan teks adalah...",o:["Ctrl + B","Ctrl + I","Ctrl + U","Ctrl + Z"],a:0},
-{type:"pg",category:"Microsoft Word",q:"Fitur untuk memiringkan teks disebut...",o:["Bold","Italic","Underline","Align"],a:1},
-{type:"pg",category:"Microsoft Word",q:"Ekstensi dokumen Word modern adalah...",o:[".xlsx",".docx",".pptx",".html"],a:1},
-{type:"pg",category:"Microsoft Word",q:"Shortcut untuk menyalin teks adalah...",o:["Ctrl + X","Ctrl + V","Ctrl + C","Ctrl + A"],a:2},
-{type:"pg",category:"Microsoft Word",q:"Fitur untuk mengatur jarak antarbaris adalah...",o:["Line Spacing","WordArt","Page Color","Find"],a:0},
-{type:"pg",category:"Microsoft Word",q:"Perintah untuk membuat teks bergaris bawah adalah...",o:["Bold","Italic","Highlight","Underline"],a:3},
-{type:"pg",category:"Microsoft Word",q:"Shortcut untuk mencetak dokumen adalah...",o:["Ctrl + N","Ctrl + P","Ctrl + O","Ctrl + F"],a:1},
-{type:"pg",category:"Microsoft Word",q:"Fitur untuk memeriksa ejaan adalah...",o:["Mail Merge","Page Border","Spelling & Grammar","Page Number"],a:2},
+  // Microsoft Word (10)
+  {t:"pg",c:"Microsoft Word",q:"Microsoft Word adalah aplikasi yang paling tepat digunakan untuk...",o:["Mengolah angka dan tabel hitungan","Membuat dan mengedit dokumen teks","Mengedit video","Membuat animasi 3D"],a:1},
+  {t:"pg",c:"Microsoft Word",q:"Untuk menyimpan dokumen dengan cepat, kita menekan tombol...",o:["Ctrl + P","Ctrl + C","Ctrl + S","Ctrl + V"],a:2},
+  {t:"pg",c:"Microsoft Word",q:"Agar tulisan menjadi tebal (bold), kita dapat menekan tombol...",o:["Ctrl + B","Ctrl + I","Ctrl + U","Ctrl + Z"],a:0},
+  {t:"pg",c:"Microsoft Word",q:"File dokumen Microsoft Word versi baru memiliki ekstensi...",o:[".xlsx",".pptx",".docx",".html"],a:2},
+  {t:"pg",c:"Microsoft Word",q:"Untuk menyisipkan gambar atau tabel ke dalam dokumen, kita memakai tab...",o:["Home","Insert","Review","View"],a:1},
+  {t:"pg",c:"Microsoft Word",q:"Perintah Align Center (Ctrl + E) digunakan untuk membuat teks menjadi...",o:["Rata kiri","Rata kanan","Rata tengah","Rata kiri dan kanan"],a:2},
+  {t:"pg",c:"Microsoft Word",q:"Kamu tidak sengaja menghapus satu kalimat. Tombol yang tepat untuk mengembalikannya adalah...",o:["Ctrl + Z","Ctrl + X","Ctrl + N","Ctrl + A"],a:0},
+  {t:"pg",c:"Microsoft Word",q:"Untuk memindahkan teks dari satu tempat ke tempat lain, kita menggunakan perintah...",o:["Copy lalu Undo","Cut lalu Paste","Bold lalu Italic","Save lalu Close"],a:1},
+  {t:"pg",c:"Microsoft Word",q:"Posisi kertas yang mendatar (lebih lebar daripada tingginya) disebut...",o:["Portrait","Margin","Landscape","Indent"],a:2},
+  {t:"pg",c:"Microsoft Word",q:"Fitur Find (Ctrl + F) berguna untuk...",o:["Mencari kata tertentu di dalam dokumen","Mengubah warna halaman","Mencetak dokumen","Menyisipkan nomor halaman"],a:0},
 
-{type:"pg",category:"Microsoft Excel",q:"Microsoft Excel terutama digunakan untuk...",o:["Mengedit video","Mengolah data dan angka","Membuat animasi","Mengedit suara"],a:1},
-{type:"pg",category:"Microsoft Excel",q:"Pertemuan antara baris dan kolom disebut...",o:["Sheet","Workbook","Cell","Range"],a:2},
-{type:"pg",category:"Microsoft Excel",q:"Rumus Excel biasanya diawali dengan tanda...",o:["=","#","&","%"],a:0},
-{type:"pg",category:"Microsoft Excel",q:"Fungsi untuk menjumlahkan angka adalah...",o:["COUNT","MAX","AVERAGE","SUM"],a:3},
-{type:"pg",category:"Microsoft Excel",q:"Fungsi untuk menghitung rata-rata adalah...",o:["MIN","AVERAGE","SUM","IF"],a:1},
-{type:"pg",category:"Microsoft Excel",q:"Kolom pada Excel ditandai dengan...",o:["Angka","Simbol","Huruf","Warna"],a:2},
-{type:"pg",category:"Microsoft Excel",q:"Baris pada Excel ditandai dengan...",o:["Angka","Huruf","Simbol","Warna"],a:0},
-{type:"pg",category:"Microsoft Excel",q:"Fungsi untuk mencari nilai terbesar adalah...",o:["MIN","SUM","COUNT","MAX"],a:3},
-{type:"pg",category:"Microsoft Excel",q:"Ekstensi file Excel modern adalah...",o:[".docx",".xlsx",".pptx",".txt"],a:1},
-{type:"pg",category:"Microsoft Excel",q:"Rumus yang benar untuk menjumlahkan A1 sampai A5 adalah...",o:["=ADD(A1:A5)","=TOTAL(A1:A5)","=SUM(A1:A5)","=PLUS(A1:A5)"],a:2},
+  // Microsoft Excel (10)
+  {t:"pg",c:"Microsoft Excel",q:"Pertemuan antara satu baris dan satu kolom pada Excel disebut...",o:["Sheet","Workbook","Cell","Table"],a:2},
+  {t:"pg",c:"Microsoft Excel",q:"Setiap rumus di Excel harus diawali dengan tanda...",o:["#","=","&","@"],a:1},
+  {t:"pg",c:"Microsoft Excel",q:"Fungsi Excel untuk menjumlahkan sekumpulan angka adalah...",o:["COUNT","MAX","SUM","AVERAGE"],a:2},
+  {t:"pg",c:"Microsoft Excel",q:"Cell yang berada di kolom C dan baris 3 memiliki alamat...",o:["3C","C3","C-3","CC3"],a:1},
+  {t:"pg",c:"Microsoft Excel",q:"Fungsi yang dipakai untuk menghitung nilai rata-rata adalah...",o:["MIN","SUM","IF","AVERAGE"],a:3},
+  {t:"pg",c:"Microsoft Excel",q:"Untuk mencari nilai tertinggi dari data nilai ujian, kita memakai fungsi...",o:["MAX","MIN","COUNT","SUM"],a:0},
+  {t:"pg",c:"Microsoft Excel",q:"Jika cell A1 berisi 5 dan cell B1 berisi 7, maka hasil rumus =A1+B1 adalah...",o:["57","35","12","2"],a:2},
+  {t:"pg",c:"Microsoft Excel",q:"Satu file Excel yang berisi beberapa lembar kerja disebut...",o:["Cell","Workbook","Column","Formula"],a:1},
+  {t:"pg",c:"Microsoft Excel",q:"Rumus =SUM(B2:B6) akan menjumlahkan...",o:["Hanya cell B2 dan B6","Cell B2 sampai B6","Semua cell di kolom A","Cell B2 dikali B6"],a:1},
+  {t:"pg",c:"Microsoft Excel",q:"Untuk mencari nilai terkecil dari sekumpulan angka, kita memakai fungsi...",o:["MAX","SUM","MIN","AVERAGE"],a:2},
 
-{type:"pg",category:"VS Code, HTML, Python",q:"Visual Studio Code adalah aplikasi untuk...",o:["Membuat dan mengedit kode","Mengolah angka saja","Membuat presentasi saja","Mengedit foto saja"],a:0},
-{type:"pg",category:"VS Code, HTML, Python",q:"HTML digunakan untuk...",o:["Mengolah database saja","Mengatur perangkat keras","Menyusun struktur halaman web","Membuat sistem operasi"],a:2},
-{type:"pg",category:"VS Code, HTML, Python",q:"Tag HTML untuk membuat judul utama adalah...",o:["<p>","<h1>","<img>","<br>"],a:1},
-{type:"pg",category:"VS Code, HTML, Python",q:"Ekstensi file Python adalah...",o:[".html",".css",".js",".py"],a:3},
-{type:"pg",category:"VS Code, HTML, Python",q:"Perintah Python untuk menampilkan teks adalah...",o:["print()","show()","echo()","displayText()"],a:0},
+  // VS Code & HTML (5)
+  {t:"pg",c:"VS Code & HTML",q:"Visual Studio Code (VS Code) adalah aplikasi yang digunakan untuk...",o:["Menulis dan mengedit kode program","Mengedit foto","Membuat presentasi","Mengolah angka"],a:0},
+  {t:"pg",c:"VS Code & HTML",q:"HTML adalah singkatan dari...",o:["High Text Machine Language","HyperText Markup Language","Home Tool Making Language","Hyper Transfer Mobile Link"],a:1},
+  {t:"pg",c:"VS Code & HTML",q:"Tag HTML untuk membuat judul dengan ukuran paling besar adalah...",o:["<p>","<h6>","<h1>","<br>"],a:2},
+  {t:"pg",c:"VS Code & HTML",q:"Agar sebuah file dapat dibuka di browser sebagai halaman web, nama filenya diakhiri dengan...",o:[".docx",".html",".xlsx",".mp3"],a:1},
+  {t:"pg",c:"VS Code & HTML",q:"Tag HTML yang digunakan untuk membuat paragraf adalah...",o:["<p>","<a>","<img>","<h1>"],a:0},
 
-{type:"essay",category:"Esai HTML",q:"Jelaskan pengertian HTML dan fungsinya dalam pembuatan website!"},
-{type:"essay",category:"Esai HTML",q:"Tuliskan struktur dasar dokumen HTML yang benar!"},
-{type:"essay",category:"Esai HTML",q:"Jelaskan perbedaan tag <head> dan <body>!"},
-{type:"essay",category:"Esai HTML",q:'Tuliskan kode HTML untuk menampilkan judul "Website Saya" dan paragraf "Selamat datang di website saya"!'},
-{type:"essay",category:"Esai HTML",q:"Jelaskan fungsi tag <a>, <img>, dan <p> dalam HTML!"}
+  // Esai HTML (5)
+  {t:"essay",c:"Esai HTML",q:"Jelaskan apa yang dimaksud dengan HTML dan apa fungsinya dalam pembuatan website!"},
+  {t:"essay",c:"Esai HTML",q:"Tuliskan struktur dasar dokumen HTML yang benar!"},
+  {t:"essay",c:"Esai HTML",q:"Jelaskan perbedaan antara tag <head> dan tag <body>!"},
+  {t:"essay",c:"Esai HTML",q:"Tuliskan kode HTML untuk menampilkan judul \"Website Saya\" dan paragraf \"Selamat datang di website saya\"!"},
+  {t:"essay",c:"Esai HTML",q:"Jelaskan fungsi tag <a>, <img>, dan <p> dalam HTML!"}
 ];
 
-let current = 0;
-let answers = {};
-let remaining = 1800;
-let timerInterval;
-let participant = {};
+const PG_TOTAL = questions.filter(q => q.t === "pg").length; // 25
+const DURATION_MS = 30 * 60 * 1000;
+const KEY_RESULTS = "xaverius_quiz_demo";
+const KEY_PROGRESS = "xaverius_quiz_progress";
+const KEY_THEME = "xaverius_theme";
+
+/* ---------- Util ---------- */
+const $ = id => document.getElementById(id);
+function readJSON(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch (e) { return fallback; }
+}
+function writeJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch (e) { return false; }
+}
+
+/* ---------- Tema ---------- */
+function updateThemeButton() {
+  const dark = document.documentElement.classList.contains("dark");
+  $("themeIcon").textContent = dark ? "☀️" : "🌙";
+  $("themeLabel").textContent = dark ? "Terang" : "Gelap";
+}
+$("themeToggle").addEventListener("click", () => {
+  const dark = document.documentElement.classList.toggle("dark");
+  try { localStorage.setItem(KEY_THEME, dark ? "dark" : "light"); } catch (e) {}
+  updateThemeButton();
+});
+updateThemeButton();
+
+/* ---------- State ---------- */
+let state = null;       // {participant, answers, current, endTime}
+let timerInterval = null;
 let submitted = false;
 
-const $ = id => document.getElementById(id);
+function saveProgress() { if (state && !submitted) writeJSON(KEY_PROGRESS, state); }
 
-$("registrationForm").addEventListener("submit", function(e) {
- e.preventDefault();
+/* ---------- Pendaftaran ---------- */
+function showFormError(msg) {
+  const el = $("formError");
+  el.textContent = msg;
+  el.classList.remove("hidden");
+}
 
- participant = {
-  firstName:$("firstName").value.trim(),
-  lastName:$("lastName").value.trim(),
-  email:$("email").value.trim()
- };
+$("registrationForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  $("formError").classList.add("hidden");
 
- if (!participant.firstName || !participant.lastName || !participant.email) return;
+  const participant = {
+    firstName: $("firstName").value.trim(),
+    lastName: $("lastName").value.trim(),
+    email: $("email").value.trim()
+  };
 
- $("registration").classList.add("hidden");
- $("exam").classList.remove("hidden");
+  if (!participant.firstName || !participant.lastName || !participant.email) {
+    showFormError("Lengkapi nama depan, nama belakang, dan email.");
+    return;
+  }
+  if (!$("email").checkValidity()) {
+    showFormError("Format email belum benar.");
+    return;
+  }
 
- renderQuestion();
+  const already = readJSON(KEY_RESULTS, []).some(
+    r => r.participant && r.participant.email.toLowerCase() === participant.email.toLowerCase()
+  );
+  if (already) {
+    showFormError("Email ini sudah pernah mengerjakan ujian.");
+    return;
+  }
 
- timerInterval = setInterval(() => {
-  remaining--;
-  $("timer").textContent =
-   String(Math.floor(remaining/60)).padStart(2,"0")+":"+
-   String(remaining%60).padStart(2,"0");
-
-  if (remaining <= 0) submitExam();
- },1000);
+  state = { participant, answers: {}, current: 0, endTime: Date.now() + DURATION_MS };
+  saveProgress();
+  startExam();
 });
+
+/* ---------- Ujian ---------- */
+function startExam() {
+  $("registration").classList.add("hidden");
+  $("exam").classList.remove("hidden");
+  renderQuestion();
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function tick() {
+  const remaining = Math.max(0, Math.round((state.endTime - Date.now()) / 1000));
+  const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+  const s = String(remaining % 60).padStart(2, "0");
+  const timer = $("timer");
+  timer.textContent = m + ":" + s;
+  const low = remaining <= 300;
+  timer.classList.toggle("text-red-600", low);
+  timer.classList.toggle("dark:text-red-400", low);
+  timer.classList.toggle("text-indigo-700", !low);
+  timer.classList.toggle("dark:text-indigo-300", !low);
+  if (remaining <= 0) submitExam();
+}
+
+function isAnswered(i) {
+  const a = state.answers[i];
+  return a !== undefined && a !== null && String(a).trim() !== "";
+}
+
+function renderNav() {
+  const grid = $("navGrid");
+  grid.replaceChildren();
+  questions.forEach((_, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = i + 1;
+    b.setAttribute("aria-label", "Soal " + (i + 1));
+    let cls = "w-9 h-9 rounded-lg text-sm font-medium border ";
+    cls += isAnswered(i)
+      ? "bg-indigo-600 text-white border-indigo-600 "
+      : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 ";
+    if (i === state.current) cls += "ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900 ";
+    b.className = cls;
+    b.addEventListener("click", () => { state.current = i; saveProgress(); renderQuestion(); });
+    grid.appendChild(b);
+  });
+}
 
 function renderQuestion() {
- const q = questions[current];
- $("progress").textContent = `Soal ${current+1} dari ${questions.length}`;
+  const i = state.current;
+  const q = questions[i];
+  $("progress").textContent = "Soal " + (i + 1) + " dari " + questions.length;
 
- const container = $("questionContainer");
- container.replaceChildren();
+  const container = $("questionContainer");
+  container.replaceChildren();
 
- const heading = document.createElement("p");
- heading.className = "text-sm text-indigo-300 mb-2";
- heading.textContent = q.category;
- container.appendChild(heading);
+  const cat = document.createElement("p");
+  cat.className = "text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2";
+  cat.textContent = q.c + (q.t === "essay" ? " (esai)" : "");
+  container.appendChild(cat);
 
- const title = document.createElement("h2");
- title.className = "text-xl font-bold mb-5";
- title.textContent = q.q;
- container.appendChild(title);
+  const title = document.createElement("h2");
+  title.className = "text-lg sm:text-xl font-bold mb-5 leading-snug";
+  title.textContent = q.q;
+  container.appendChild(title);
 
- if (q.type === "pg") {
-  q.o.forEach((option,index) => {
-   const label = document.createElement("label");
-   label.className = "option";
+  if (q.t === "pg") {
+    q.o.forEach((option, index) => {
+      const selected = state.answers[i] === index;
+      const label = document.createElement("label");
+      label.className = "flex items-start gap-3 p-3 my-2 rounded-xl border cursor-pointer transition-colors " +
+        (selected
+          ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-950 dark:border-indigo-400"
+          : "border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800");
 
-   const radio = document.createElement("input");
-   radio.type = "radio";
-   radio.name = "answer";
-   radio.value = index;
-   radio.checked = answers[current] === index;
-   radio.addEventListener("change", () => answers[current] = index);
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "answer";
+      radio.value = index;
+      radio.className = "mt-1 accent-indigo-600";
+      radio.checked = selected;
+      radio.addEventListener("change", () => {
+        state.answers[i] = index;
+        saveProgress();
+        renderQuestion();
+      });
 
-   label.append(radio,document.createTextNode(
-    String.fromCharCode(65+index)+". "+option
-   ));
-   container.appendChild(label);
-  });
- } else {
-  const textarea = document.createElement("textarea");
-  textarea.className = "w-full p-3 rounded text-black";
-  textarea.rows = 7;
-  textarea.maxLength = 5000;
-  textarea.placeholder = "Tuliskan jawaban esai...";
-  textarea.value = answers[current] || "";
-  textarea.addEventListener("input", () => answers[current] = textarea.value);
-  container.appendChild(textarea);
- }
+      const text = document.createElement("span");
+      text.textContent = String.fromCharCode(65 + index) + ". " + option;
 
- $("previous").disabled = current === 0;
- $("previous").classList.toggle("opacity-50",current === 0);
- $("next").classList.toggle("hidden",current === questions.length-1);
- $("finish").classList.toggle("hidden",current !== questions.length-1);
-}
-
-$("previous").addEventListener("click",() => {
- if(current > 0) { current--; renderQuestion(); }
-});
-
-$("next").addEventListener("click",() => {
- if(current < questions.length-1) { current++; renderQuestion(); }
-});
-
-$("finish").addEventListener("click",() => {
- if(confirm("Apakah kamu yakin ingin mengumpulkan ujian?")) submitExam();
-});
-
-function submitExam() {
- if(submitted) return;
- submitted = true;
- clearInterval(timerInterval);
-
- let score = 0;
- let totalPG = 0;
-
- questions.forEach((q,index) => {
-  if(q.type === "pg") {
-   totalPG++;
-   if(answers[index] === q.a) score++;
+      label.append(radio, text);
+      container.appendChild(label);
+    });
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.className = "w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm";
+    textarea.rows = 8;
+    textarea.maxLength = 5000;
+    textarea.placeholder = "Tulis jawabanmu di sini...";
+    textarea.value = state.answers[i] || "";
+    textarea.addEventListener("input", () => {
+      state.answers[i] = textarea.value;
+      saveProgress();
+      renderNavOnly();
+    });
+    container.appendChild(textarea);
   }
- });
 
- const result = {
-  participant,
-  answers,
-  score,
-  totalPG,
-  submittedAt:new Date().toISOString()
- };
-
- /*
-   DEMO LOKAL:
-   Data disimpan pada browser yang digunakan.
-   Untuk sistem online yang aman, hubungkan ke Supabase
-   dan lakukan penilaian melalui backend.
- */
- try {
-  const key = "xaverius_quiz_demo";
-  const data = JSON.parse(localStorage.getItem(key) || "[]");
-  data.push(result);
-  localStorage.setItem(key,JSON.stringify(data));
- } catch(error) {
-  alert("Penyimpanan lokal gagal.");
- }
-
- $("exam").classList.add("hidden");
- $("result").classList.remove("hidden");
- $("resultText").textContent =
-  `Nilai pilihan ganda: ${score}/${totalPG} (${Math.round(score/totalPG*100)}%). Esai menunggu penilaian guru.`;
+  $("previous").disabled = i === 0;
+  $("next").classList.toggle("hidden", i === questions.length - 1);
+  $("finish").classList.toggle("hidden", i !== questions.length - 1);
+  renderNav();
 }
+
+// Saat mengetik esai, hanya perbarui navigasi (agar kursor tidak hilang)
+function renderNavOnly() { renderNav(); }
+
+$("previous").addEventListener("click", () => {
+  if (state.current > 0) { state.current--; saveProgress(); renderQuestion(); window.scrollTo(0, 0); }
+});
+$("next").addEventListener("click", () => {
+  if (state.current < questions.length - 1) { state.current++; saveProgress(); renderQuestion(); window.scrollTo(0, 0); }
+});
+$("finish").addEventListener("click", () => {
+  const blank = questions.filter((_, i) => !isAnswered(i)).length;
+  const msg = blank > 0
+    ? "Masih ada " + blank + " soal yang belum dijawab. Yakin ingin mengumpulkan?"
+    : "Apakah kamu yakin ingin mengumpulkan ujian?";
+  if (confirm(msg)) submitExam();
+});
+
+/* ---------- Kumpulkan ---------- */
+function submitExam() {
+  if (submitted || !state) return;
+  submitted = true;
+  clearInterval(timerInterval);
+
+  let score = 0;
+  const details = questions.map((q, i) => {
+    const ans = state.answers[i];
+    if (q.t === "pg") {
+      const correct = ans === q.a;
+      if (correct) score++;
+      return { type: "pg", category: q.c, q: q.q, options: q.o, answer: ans === undefined ? null : ans, key: q.a, correct };
+    }
+    return { type: "essay", category: q.c, q: q.q, answer: ans || "" };
+  });
+
+  const result = {
+    id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+    participant: state.participant,
+    details,
+    grades: {},               // penilaian esai oleh guru: {indeksSoal: true/false}
+    score,
+    totalPG: PG_TOTAL,
+    submittedAt: new Date().toISOString()
+  };
+
+  /*
+    DEMO LOKAL: data disimpan di browser perangkat ini.
+    Agar guru bisa melihat hasil dari perangkat siswa lain,
+    sambungkan ke backend (misalnya Supabase).
+  */
+  const all = readJSON(KEY_RESULTS, []);
+  all.push(result);
+  const ok = writeJSON(KEY_RESULTS, all);
+  if (!ok) alert("Penyimpanan lokal gagal. Beritahu gurumu.");
+
+  try { localStorage.removeItem(KEY_PROGRESS); } catch (e) {}
+
+  $("exam").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("progress").textContent = "Selesai";
+  $("timer").textContent = "";
+  $("resultScore").textContent = score + " / " + PG_TOTAL;
+  $("resultText").textContent = "Persentase: " + Math.round(score / PG_TOTAL * 100) + "%";
+}
+
+/* ---------- Lanjutkan jika halaman di-refresh ---------- */
+(function resume() {
+  const saved = readJSON(KEY_PROGRESS, null);
+  if (!saved || !saved.participant || !saved.endTime) return;
+  state = saved;
+  if (Date.now() >= state.endTime) {
+    $("registration").classList.add("hidden");
+    submitExam();
+  } else {
+    startExam();
+  }
+})();
 </script>
 </body>
-  </html>
+ </html>
