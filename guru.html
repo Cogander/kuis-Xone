@@ -1,355 +1,171 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard Guru | SMP Xaverius 1 Palembang</title>
-<script>
-  (function () {
-    var t = null;
-    try { t = localStorage.getItem("xaverius_theme"); } catch (e) {}
-    if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    if (t === "dark") document.documentElement.classList.add("dark");
-  })();
-</script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config = { darkMode: "class" };</script>
+<title>Kuis Xone - Dashboard Guru</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  body { font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
-  .hidden { display: none !important; }
+*{box-sizing:border-box}
+body{font-family:Arial;background:#101827;color:white;margin:0}
+header{background:#4338ca;padding:25px;text-align:center}
+main{max-width:1100px;margin:25px auto;padding:15px}
+.card{background:#1e293b;padding:20px;border-radius:12px;margin-bottom:18px}
+input,textarea{width:100%;padding:12px;margin:8px 0 15px;border:0;border-radius:7px}
+button{background:#4f46e5;color:white;border:0;padding:11px 17px;border-radius:7px;cursor:pointer;margin:3px}
+table{width:100%;border-collapse:collapse;min-width:650px}
+td,th{padding:12px;border-bottom:1px solid #475569;text-align:left}
+.wrap{overflow-x:auto}
+.hidden{display:none}
+.answer{background:#334155;padding:12px;border-radius:7px;margin:10px 0}
 </style>
 </head>
-<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
-
-<header class="sticky top-0 z-10 bg-white/95 dark:bg-slate-950/95 backdrop-blur border-b border-slate-200 dark:border-slate-800">
-  <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-    <div>
-      <h1 class="text-lg sm:text-xl font-bold">Dashboard Guru</h1>
-      <p class="text-sm text-slate-600 dark:text-slate-400">SMP Xaverius 1 Palembang</p>
-    </div>
-    <button id="themeToggle" type="button" aria-label="Ganti mode terang/gelap"
-      class="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      <span id="themeIcon">🌙</span> <span id="themeLabel" class="hidden sm:inline">Gelap</span>
-    </button>
-  </div>
+<body>
+<header>
+<h1>SMP XAVERIUS 1 PALEMBANG</h1>
+<p>DASHBOARD GURU - KUIS XONE</p>
 </header>
+<main>
+<section id="login" class="card">
+<h2>Login Guru</h2>
+<label>Email</label>
+<input id="email" type="email" placeholder="Email guru">
+<label>Password</label>
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Masuk Dashboard</button>
+<p id="loginMessage"></p>
+</section>
 
-<main class="max-w-6xl mx-auto p-4 sm:p-5">
+<section id="dashboard" class="hidden">
+<div class="card">
+<h2>Dashboard Hasil Ujian</h2>
+<button onclick="loadResults()">Refresh Data</button>
+<button onclick="logout()">Logout</button>
+<p id="count">Memuat data...</p>
+<div class="wrap">
+<table>
+<thead><tr>
+<th>Nama</th><th>Email</th><th>Nilai PG</th>
+<th>Nilai Esai</th><th>Waktu</th><th>Detail</th>
+</tr></thead>
+<tbody id="rows"></tbody>
+</table>
+</div>
+</div>
 
-  <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-    <h2 class="text-xl font-bold mb-4">Hasil peserta</h2>
-
-    <div class="flex flex-wrap gap-3 mb-5">
-      <input id="search" placeholder="Cari nama atau email..." aria-label="Cari peserta"
-        class="flex-1 min-w-[200px] p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      <button id="reload" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg font-medium">Muat ulang</button>
-      <button id="export" type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium">Ekspor CSV</button>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-sm sm:text-base">
-        <thead>
-          <tr class="border-b border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400">
-            <th class="p-3">Nama</th>
-            <th class="p-3">Email</th>
-            <th class="p-3">Nilai PG</th>
-            <th class="p-3">Esai</th>
-            <th class="p-3">Nilai akhir</th>
-            <th class="p-3">Tanggal</th>
-            <th class="p-3">Detail</th>
-          </tr>
-        </thead>
-        <tbody id="results"></tbody>
-      </table>
-    </div>
-    <p id="status" class="mt-4 text-slate-600 dark:text-slate-400"></p>
-  </section>
-
-  <section id="details" class="hidden mt-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-    <div class="flex items-start justify-between gap-3 mb-4">
-      <h2 class="text-xl font-bold">Detail jawaban peserta</h2>
-      <button id="closeDetails" type="button" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-4 py-2 rounded-lg">Tutup</button>
-    </div>
-    <div id="detailContent"></div>
-  </section>
-
+<div id="detail" class="card hidden">
+<h2>Detail Jawaban</h2>
+<div id="detailContent"></div>
+</div>
+</section>
 </main>
 
 <script>
-const KEY_RESULTS = "xaverius_quiz_demo";
-const KEY_THEME = "xaverius_theme";
+const URL="https://qqvqcvhcpjrmoynkmizb.supabase.co";
+const KEY="TEMPELKAN_PUBLISHABLE_KEY_DI_SINI";
+const db=supabase.createClient(URL,KEY);
+let results=[];
 
-/* Panduan jawaban esai untuk membantu guru menilai (tidak terlihat oleh siswa) */
-const essayGuide = [
-  "HTML (HyperText Markup Language) adalah bahasa untuk menyusun struktur dan isi halaman web (judul, paragraf, gambar, tautan, dll). Bukan bahasa pemrograman, melainkan bahasa markup.",
-  "<!DOCTYPE html>\n<html>\n<head>\n  <title>...</title>\n</head>\n<body>\n  ...\n</body>\n</html>",
-  "<head> berisi informasi tentang halaman yang tidak tampil di layar (judul tab, meta, tautan CSS). <body> berisi isi halaman yang tampil di browser (teks, gambar, tombol).",
-  "<h1>Website Saya</h1>\n<p>Selamat datang di website saya</p>",
-  "<a> membuat tautan (link) ke halaman lain; <img> menampilkan gambar; <p> membuat paragraf teks."
-];
-
-let all = [];
-let openId = null;
-
-const $ = id => document.getElementById(id);
-
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const msg=document.getElementById("loginMessage");
+ msg.textContent="Memeriksa akun...";
+ const {error}=await db.auth.signInWithPassword({email,password});
+ if(error){msg.textContent="Login gagal: "+error.message;return}
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+ loadResults();
 }
 
-/* ---------- Tema ---------- */
-function updateThemeButton() {
-  const dark = document.documentElement.classList.contains("dark");
-  $("themeIcon").textContent = dark ? "☀️" : "🌙";
-  $("themeLabel").textContent = dark ? "Terang" : "Gelap";
-}
-$("themeToggle").addEventListener("click", () => {
-  const dark = document.documentElement.classList.toggle("dark");
-  try { localStorage.setItem(KEY_THEME, dark ? "dark" : "light"); } catch (e) {}
-  updateThemeButton();
-});
-updateThemeButton();
-
-/* ---------- Data ---------- */
-function loadResults() {
-  try { all = JSON.parse(localStorage.getItem(KEY_RESULTS) || "[]"); }
-  catch (e) { all = []; }
-  render();
-  if (openId) showDetails(openId);
+async function logout(){
+ await db.auth.signOut();
+ document.getElementById("dashboard").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
 }
 
-function saveResults() {
-  try { localStorage.setItem(KEY_RESULTS, JSON.stringify(all)); }
-  catch (e) { alert("Gagal menyimpan penilaian."); }
+async function loadResults(){
+ const {data,error}=await db.from("hasil_ujian").select("*").order("waktu_pengumpulan",{ascending:false});
+ if(error){alert("Gagal mengambil data: "+error.message);return}
+ results=data||[];
+ document.getElementById("count").textContent="Jumlah peserta: "+results.length;
+ const tbody=document.getElementById("rows");tbody.replaceChildren();
+ results.forEach((r,i)=>{
+  const tr=document.createElement("tr");
+  const values=[
+   r.nama_depan+" "+r.nama_belakang,r.email,
+   r.nilai_pg+"/25",
+   r.nilai_esai===null?"Belum dinilai":r.nilai_esai+"/100",
+   new Date(r.waktu_pengumpulan).toLocaleString("id-ID")
+  ];
+  values.forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
+  const td=document.createElement("td"),btn=document.createElement("button");
+  btn.textContent="Lihat";btn.onclick=()=>showDetail(i);
+  td.appendChild(btn);tr.appendChild(td);tbody.appendChild(tr);
+ });
 }
 
-// Hanya data dengan format baru (punya details) yang ditampilkan
-function valid() { return all.filter(r => r.participant && Array.isArray(r.details)); }
+function showDetail(index){
+ const r=results[index],root=document.getElementById("detailContent");
+ root.replaceChildren();
+ const heading=document.createElement("h3");
+ heading.textContent=r.nama_depan+" "+r.nama_belakang+" ("+r.email+")";
+ root.appendChild(heading);
+ const score=document.createElement("p");
+ score.textContent="Nilai pilihan ganda: "+r.nilai_pg+"/25";
+ root.appendChild(score);
 
-function essayIndexes(r) {
-  return r.details.map((d, i) => d.type === "essay" ? i : -1).filter(i => i >= 0);
+ const essayQuestions=[
+ "Jelaskan pengertian HTML dan fungsinya dalam pembuatan website!",
+ "Jelaskan perbedaan tag <head> dan <body>!",
+ "Tuliskan struktur dasar dokumen HTML!",
+ "Bagaimana kode HTML untuk membuat judul Website Saya dan paragraf Selamat Datang?",
+ "Jelaskan fungsi tag <a>, <img>, dan <p>!"
+ ];
+ const answers=Array.isArray(r.jawaban_esai)?r.jawaban_esai:[];
+ essayQuestions.forEach((question,i)=>{
+  const box=document.createElement("div");box.className="answer";
+  const h=document.createElement("h4");h.textContent="Esai "+(i+1)+": "+question;
+  const p=document.createElement("p");p.textContent=answers[i]||"Tidak dijawab";
+  box.append(h,p);root.appendChild(box);
+ });
+
+ const label=document.createElement("label");
+ label.textContent="Nilai esai keseluruhan (0-100)";
+ const input=document.createElement("input");
+ input.type="number";input.min="0";input.max="100";
+ input.value=r.nilai_esai??"";
+ input.id="essayScore";
+ const button=document.createElement("button");
+ button.textContent="Simpan Nilai Esai";
+ button.onclick=()=>saveScore(r.id);
+ root.append(label,input,button);
+ document.getElementById("detail").classList.remove("hidden");
+ document.getElementById("detail").scrollIntoView({behavior:"smooth"});
 }
 
-function essayStats(r) {
-  const idx = essayIndexes(r);
-  const grades = r.grades || {};
-  const graded = idx.filter(i => grades[i] === true || grades[i] === false).length;
-  const correct = idx.filter(i => grades[i] === true).length;
-  return { total: idx.length, graded, correct };
+async function saveScore(id){
+ const score=Number(document.getElementById("essayScore").value);
+ if(!Number.isInteger(score)||score<0||score>100){
+  alert("Masukkan nilai antara 0 sampai 100.");return;
+ }
+ const {error}=await db.from("hasil_ujian")
+ .update({nilai_esai:score,status_esai:"Sudah dinilai"}).eq("id",id);
+ if(error){alert("Gagal menyimpan nilai: "+error.message);return}
+ alert("Nilai esai berhasil disimpan!");
+ document.getElementById("detail").classList.add("hidden");
+ loadResults();
 }
 
-function finalScore(r) {
-  const s = essayStats(r);
-  if (s.graded < s.total) return null;
-  return Math.round((r.score + s.correct) / (r.totalPG + s.total) * 100);
-}
-
-/* ---------- Tabel ---------- */
-function render() {
-  const search = $("search").value.toLowerCase().trim();
-  const tbody = $("results");
-  tbody.replaceChildren();
-
-  const filtered = valid().filter(r => {
-    const name = (r.participant.firstName + " " + r.participant.lastName).toLowerCase();
-    return name.includes(search) || r.participant.email.toLowerCase().includes(search);
-  });
-
-  filtered.forEach(r => {
-    const tr = el("tr", "border-b border-slate-200 dark:border-slate-800");
-    const s = essayStats(r);
-    const fs = finalScore(r);
-
-    const essayText = s.graded < s.total
-      ? "Belum selesai dinilai (" + s.graded + "/" + s.total + ")"
-      : s.correct + "/" + s.total + " benar";
-
-    const values = [
-      r.participant.firstName + " " + r.participant.lastName,
-      r.participant.email,
-      r.score + "/" + r.totalPG + " (" + Math.round(r.score / r.totalPG * 100) + "%)",
-      essayText,
-      fs === null ? "-" : String(fs),
-      new Date(r.submittedAt).toLocaleString("id-ID")
-    ];
-    values.forEach(v => tr.appendChild(el("td", "p-3", v)));
-
-    const td = el("td", "p-3");
-    const btn = el("button", "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg", "Lihat");
-    btn.type = "button";
-    btn.addEventListener("click", () => { openId = r.id; showDetails(r.id); $("details").scrollIntoView({ behavior: "smooth" }); });
-    td.appendChild(btn);
-
-    const del = el("button", "ml-2 border border-red-400 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 px-3 py-2 rounded-lg", "Hapus");
-    del.type = "button";
-    del.addEventListener("click", () => {
-      if (confirm("Hapus hasil " + r.participant.firstName + " " + r.participant.lastName + "? Tindakan ini tidak bisa dibatalkan.")) {
-        all = all.filter(x => x.id !== r.id);
-        if (openId === r.id) { openId = null; $("details").classList.add("hidden"); }
-        saveResults();
-        render();
-      }
-    });
-    td.appendChild(del);
-
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-  });
-
-  $("status").textContent = filtered.length === 0
-    ? "Belum ada hasil yang cocok. Hasil muncul setelah siswa mengumpulkan ujian di perangkat ini."
-    : "Menampilkan " + filtered.length + " hasil.";
-}
-
-/* ---------- Detail ---------- */
-function showDetails(id) {
-  const r = valid().find(x => x.id === id);
-  if (!r) return;
-  r.grades = r.grades || {};
-
-  const content = $("detailContent");
-  content.replaceChildren();
-
-  const s = essayStats(r);
-  const fs = finalScore(r);
-  content.appendChild(el("h3", "text-lg font-bold", r.participant.firstName + " " + r.participant.lastName));
-  content.appendChild(el("p", "text-slate-600 dark:text-slate-400 mb-1", r.participant.email));
-  content.appendChild(el("p", "mb-5",
-    "PG: " + r.score + "/" + r.totalPG +
-    "  |  Esai benar: " + s.correct + "/" + s.total + " (dinilai " + s.graded + ")" +
-    "  |  Nilai akhir: " + (fs === null ? "menunggu semua esai dinilai" : fs)));
-
-  /* Bagian pilihan ganda */
-  content.appendChild(el("h4", "font-bold text-indigo-700 dark:text-indigo-300 mb-2", "Pilihan ganda"));
-  r.details.forEach((d, i) => {
-    if (d.type !== "pg") return;
-    const box = el("div", "border-b border-slate-200 dark:border-slate-800 py-3");
-    const head = el("div", "flex items-start gap-2");
-    head.appendChild(el("span", "font-bold " + (d.correct ? "text-green-600" : "text-red-600"), d.correct ? "✓" : "✗"));
-    head.appendChild(el("p", "font-medium", (i + 1) + ". [" + d.category + "] " + d.q));
-    box.appendChild(head);
-
-    const letter = n => String.fromCharCode(65 + Number(n));
-    const given = d.answer === null || d.answer === undefined
-      ? "Belum dijawab"
-      : letter(d.answer) + ". " + d.options[d.answer];
-    box.appendChild(el("p", "text-sm text-slate-700 dark:text-slate-300 mt-1 ml-6", "Jawaban siswa: " + given));
-    if (!d.correct) {
-      box.appendChild(el("p", "text-sm text-green-700 dark:text-green-400 ml-6", "Jawaban benar: " + letter(d.key) + ". " + d.options[d.key]));
-    }
-    content.appendChild(box);
-  });
-
-  /* Bagian esai dengan tombol centang / silang */
-  content.appendChild(el("h4", "font-bold text-indigo-700 dark:text-indigo-300 mt-6 mb-2", "Esai (nilai dengan ✓ benar atau ✗ salah)"));
-  let essayNo = 0;
-  r.details.forEach((d, i) => {
-    if (d.type !== "essay") return;
-    const guide = essayGuide[essayNo] || "";
-    essayNo++;
-
-    const box = el("div", "border border-slate-200 dark:border-slate-800 rounded-xl p-4 my-3");
-    box.appendChild(el("p", "font-medium", (i + 1) + ". " + d.q));
-
-    const ans = el("pre", "mt-3 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 whitespace-pre-wrap break-words text-sm font-mono",
-      d.answer && d.answer.trim() ? d.answer : "Belum dijawab");
-    box.appendChild(ans);
-
-    if (guide) {
-      const g = el("details", "mt-3 text-sm");
-      g.appendChild(el("summary", "cursor-pointer text-slate-600 dark:text-slate-400", "Lihat panduan jawaban"));
-      g.appendChild(el("pre", "mt-2 p-3 rounded-lg bg-green-50 dark:bg-green-950 whitespace-pre-wrap break-words font-mono", guide));
-      box.appendChild(g);
-    }
-
-    const grade = r.grades[i];
-    const row = el("div", "flex items-center gap-3 mt-4");
-
-    const yes = el("button",
-      "w-12 h-12 rounded-xl text-2xl font-bold border-2 " +
-      (grade === true ? "bg-green-600 border-green-600 text-white" : "border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-950"),
-      "✓");
-    yes.type = "button";
-    yes.setAttribute("aria-label", "Tandai benar");
-    yes.setAttribute("aria-pressed", grade === true);
-
-    const no = el("button",
-      "w-12 h-12 rounded-xl text-2xl font-bold border-2 " +
-      (grade === false ? "bg-red-600 border-red-600 text-white" : "border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"),
-      "✗");
-    no.type = "button";
-    no.setAttribute("aria-label", "Tandai salah");
-    no.setAttribute("aria-pressed", grade === false);
-
-    const setGrade = value => {
-      // Klik ulang tombol yang sama = batalkan penilaian
-      if (r.grades[i] === value) delete r.grades[i]; else r.grades[i] = value;
-      saveResults();
-      render();
-      showDetails(id);
-    };
-    yes.addEventListener("click", () => setGrade(true));
-    no.addEventListener("click", () => setGrade(false));
-
-    row.append(yes, no, el("span", "text-sm text-slate-600 dark:text-slate-400",
-      grade === true ? "Benar" : grade === false ? "Salah" : "Belum dinilai"));
-    box.appendChild(row);
-    content.appendChild(box);
-  });
-
-  $("details").classList.remove("hidden");
-}
-
-/* ---------- Ekspor CSV ---------- */
-function csvCell(value) {
-  let s = String(value === null || value === undefined ? "" : value);
-  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // cegah formula injection
-  return '"' + s.replace(/"/g, '""') + '"';
-}
-
-function exportCSV() {
-  const data = valid();
-  const header = ["Nama", "Email", "PG benar", "Total PG", "Esai benar", "Esai dinilai", "Nilai akhir", "Tanggal"];
-  for (let n = 1; n <= 5; n++) header.push("Esai " + n + " jawaban", "Esai " + n + " nilai");
-  const rows = [header];
-
-  data.forEach(r => {
-    const s = essayStats(r);
-    const fs = finalScore(r);
-    const row = [
-      r.participant.firstName + " " + r.participant.lastName,
-      r.participant.email,
-      r.score, r.totalPG, s.correct, s.graded,
-      fs === null ? "" : fs,
-      r.submittedAt
-    ];
-    essayIndexes(r).forEach(i => {
-      const g = (r.grades || {})[i];
-      row.push(r.details[i].answer, g === true ? "Benar" : g === false ? "Salah" : "Belum dinilai");
-    });
-    rows.push(row);
-  });
-
-  const csv = rows.map(row => row.map(csvCell).join(",")).join("\r\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "hasil-ujian-xaverius.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ---------- Event ---------- */
-$("search").addEventListener("input", render);
-$("reload").addEventListener("click", loadResults);
-$("export").addEventListener("click", exportCSV);
-$("closeDetails").addEventListener("click", () => { openId = null; $("details").classList.add("hidden"); });
-
-loadResults();
+(async()=>{
+ const {data}=await db.auth.getSession();
+ if(data.session){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  loadResults();
+ }
+})();
 </script>
 </body>
-   </html>
+</html>
