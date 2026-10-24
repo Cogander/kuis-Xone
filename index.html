@@ -1,411 +1,182 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ujian Coding | SMP Xaverius 1 Palembang</title>
-<script>
-  // Terapkan tema sebelum halaman tampil agar tidak berkedip
-  (function () {
-    var t = null;
-    try { t = localStorage.getItem("xaverius_theme"); } catch (e) {}
-    if (!t) t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    if (t === "dark") document.documentElement.classList.add("dark");
-  })();
-</script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config = { darkMode: "class" };</script>
+<title>Kuis Xone - Peserta</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  body { font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
-  .hidden { display: none !important; }
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#f8fafc;font-family:Arial,sans-serif}
+header{background:#4338ca;text-align:center;padding:24px}
+main{max-width:850px;margin:25px auto;padding:15px}
+.card{background:#1e293b;padding:22px;border-radius:14px;margin-bottom:18px}
+input,textarea{width:100%;padding:12px;margin:8px 0 15px;border:0;border-radius:7px;font-size:16px}
+button{background:#4f46e5;color:white;border:0;padding:12px 20px;border-radius:8px;cursor:pointer}
+button:disabled{opacity:.5}
+.option{display:block;padding:12px;background:#334155;border-radius:8px;margin:9px 0;cursor:pointer}
+.option input{width:auto;margin:0 10px 0 0}
+.hidden{display:none}
+#timer{font-size:22px;color:#facc15;font-weight:bold}
 </style>
 </head>
-<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
-
-<!-- Bilah atas: kiri = nomor soal, tengah = timer, kanan = mode gelap -->
-<header class="sticky top-0 z-10 bg-white/95 dark:bg-slate-950/95 backdrop-blur border-b border-slate-200 dark:border-slate-800">
-  <div class="max-w-3xl mx-auto grid grid-cols-3 items-center px-4 py-3">
-    <div id="progress" class="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300">SMP Xaverius 1</div>
-    <div id="timer" class="text-center text-xl sm:text-2xl font-bold tabular-nums text-indigo-700 dark:text-indigo-300"></div>
-    <div class="justify-self-end">
-      <button id="themeToggle" type="button" aria-label="Ganti mode terang/gelap"
-        class="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <span id="themeIcon">🌙</span> <span id="themeLabel" class="hidden sm:inline">Gelap</span>
-      </button>
-    </div>
-  </div>
+<body>
+<header>
+<h1>SMP XAVERIUS 1 PALEMBANG</h1>
+<p>CODING & TECHNOLOGY QUIZ</p>
 </header>
+<main>
+<section id="register" class="card">
+<h2>Pendaftaran Peserta</h2>
+<label>Nama depan</label><input id="first" required>
+<label>Nama belakang</label><input id="last" required>
+<label>Email</label><input id="email" type="email" required>
+<button onclick="startExam()">Mulai Ujian</button>
+<p>25 Pilihan Ganda + 5 Esai HTML | Waktu 30 menit</p>
+</section>
 
-<main class="max-w-3xl mx-auto p-4 sm:p-5">
+<section id="exam" class="hidden">
+<div class="card">
+<span id="progress"></span>
+<span id="timer" style="float:right">30:00</span>
+</div>
+<div class="card">
+<div id="question"></div>
+<div style="display:flex;justify-content:space-between;margin-top:20px">
+<button id="prev" onclick="move(-1)">Sebelumnya</button>
+<button id="next" onclick="move(1)">Berikutnya</button>
+<button id="finish" class="hidden" onclick="finish()">Kumpulkan</button>
+</div>
+</div>
+</section>
 
-  <!-- Pendaftaran -->
-  <section id="registration" class="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-    <h1 class="text-2xl font-bold">Ujian Coding &amp; Teknologi</h1>
-    <p class="text-slate-600 dark:text-slate-400 mt-1">SMP Xaverius 1 Palembang</p>
-
-    <form id="registrationForm" class="space-y-4 mt-6" novalidate>
-      <div>
-        <label for="firstName" class="block text-sm font-medium mb-1">Nama depan</label>
-        <input id="firstName" required maxlength="50" autocomplete="given-name"
-          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div>
-      <div>
-        <label for="lastName" class="block text-sm font-medium mb-1">Nama belakang</label>
-        <input id="lastName" required maxlength="50" autocomplete="family-name"
-          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div>
-      <div>
-        <label for="email" class="block text-sm font-medium mb-1">Email</label>
-        <input id="email" type="email" required maxlength="150" autocomplete="email"
-          class="w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      </div>
-      <p id="formError" class="hidden text-sm text-red-600 dark:text-red-400"></p>
-      <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400">
-        Mulai ujian
-      </button>
-    </form>
-
-    <ul class="text-slate-600 dark:text-slate-400 text-sm mt-6 space-y-1 list-disc pl-5">
-      <li>30 soal: 25 pilihan ganda dan 5 esai.</li>
-      <li>Waktu pengerjaan 30 menit.</li>
-      <li>Ujian hanya bisa dikerjakan satu kali per email.</li>
-    </ul>
-  </section>
-
-  <!-- Ujian -->
-  <section id="exam" class="hidden mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm">
-    <div id="questionContainer"></div>
-
-    <div class="flex justify-between gap-3 mt-6">
-      <button id="previous" type="button" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-4 py-3 rounded-lg font-medium disabled:opacity-40 disabled:cursor-not-allowed">Sebelumnya</button>
-      <button id="next" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg font-medium">Berikutnya</button>
-      <button id="finish" type="button" class="hidden bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium">Kumpulkan</button>
-    </div>
-
-    <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
-      <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Lompat ke soal (warna biru = sudah dijawab):</p>
-      <div id="navGrid" class="flex flex-wrap gap-2"></div>
-    </div>
-  </section>
-
-  <!-- Hasil -->
-  <section id="result" class="hidden mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center shadow-sm">
-    <h2 class="text-2xl font-bold mb-4">Ujian selesai</h2>
-    <p class="text-slate-600 dark:text-slate-400">Nilai pilihan ganda kamu</p>
-    <p id="resultScore" class="text-5xl font-bold text-indigo-700 dark:text-indigo-300 my-3"></p>
-    <p id="resultText" class="text-lg"></p>
-    <p class="text-slate-600 dark:text-slate-400 mt-6">Jawaban esai akan diperiksa oleh guru.</p>
-  </section>
-
+<section id="done" class="card hidden">
+<h2>Ujian berhasil dikirim!</h2>
+<p>Jawaban kamu telah disimpan. Terima kasih telah mengikuti ujian.</p>
+</section>
+<p id="message"></p>
 </main>
 
 <script>
-/* ---------- Soal ---------- */
-const questions = [
-  // Microsoft Word (10)
-  {t:"pg",c:"Microsoft Word",q:"Microsoft Word adalah aplikasi yang paling tepat digunakan untuk...",o:["Mengolah angka dan tabel hitungan","Membuat dan mengedit dokumen teks","Mengedit video","Membuat animasi 3D"],a:1},
-  {t:"pg",c:"Microsoft Word",q:"Untuk menyimpan dokumen dengan cepat, kita menekan tombol...",o:["Ctrl + P","Ctrl + C","Ctrl + S","Ctrl + V"],a:2},
-  {t:"pg",c:"Microsoft Word",q:"Agar tulisan menjadi tebal (bold), kita dapat menekan tombol...",o:["Ctrl + B","Ctrl + I","Ctrl + U","Ctrl + Z"],a:0},
-  {t:"pg",c:"Microsoft Word",q:"File dokumen Microsoft Word versi baru memiliki ekstensi...",o:[".xlsx",".pptx",".docx",".html"],a:2},
-  {t:"pg",c:"Microsoft Word",q:"Untuk menyisipkan gambar atau tabel ke dalam dokumen, kita memakai tab...",o:["Home","Insert","Review","View"],a:1},
-  {t:"pg",c:"Microsoft Word",q:"Perintah Align Center (Ctrl + E) digunakan untuk membuat teks menjadi...",o:["Rata kiri","Rata kanan","Rata tengah","Rata kiri dan kanan"],a:2},
-  {t:"pg",c:"Microsoft Word",q:"Kamu tidak sengaja menghapus satu kalimat. Tombol yang tepat untuk mengembalikannya adalah...",o:["Ctrl + Z","Ctrl + X","Ctrl + N","Ctrl + A"],a:0},
-  {t:"pg",c:"Microsoft Word",q:"Untuk memindahkan teks dari satu tempat ke tempat lain, kita menggunakan perintah...",o:["Copy lalu Undo","Cut lalu Paste","Bold lalu Italic","Save lalu Close"],a:1},
-  {t:"pg",c:"Microsoft Word",q:"Posisi kertas yang mendatar (lebih lebar daripada tingginya) disebut...",o:["Portrait","Margin","Landscape","Indent"],a:2},
-  {t:"pg",c:"Microsoft Word",q:"Fitur Find (Ctrl + F) berguna untuk...",o:["Mencari kata tertentu di dalam dokumen","Mengubah warna halaman","Mencetak dokumen","Menyisipkan nomor halaman"],a:0},
+const URL="https://qqvqcvhcpjrmoynkmizb.supabase.co";
+const KEY="TEMPELKAN_PUBLISHABLE_KEY_DI_SINI";
+const db=supabase.createClient(URL,KEY);
 
-  // Microsoft Excel (10)
-  {t:"pg",c:"Microsoft Excel",q:"Pertemuan antara satu baris dan satu kolom pada Excel disebut...",o:["Sheet","Workbook","Cell","Table"],a:2},
-  {t:"pg",c:"Microsoft Excel",q:"Setiap rumus di Excel harus diawali dengan tanda...",o:["#","=","&","@"],a:1},
-  {t:"pg",c:"Microsoft Excel",q:"Fungsi Excel untuk menjumlahkan sekumpulan angka adalah...",o:["COUNT","MAX","SUM","AVERAGE"],a:2},
-  {t:"pg",c:"Microsoft Excel",q:"Cell yang berada di kolom C dan baris 3 memiliki alamat...",o:["3C","C3","C-3","CC3"],a:1},
-  {t:"pg",c:"Microsoft Excel",q:"Fungsi yang dipakai untuk menghitung nilai rata-rata adalah...",o:["MIN","SUM","IF","AVERAGE"],a:3},
-  {t:"pg",c:"Microsoft Excel",q:"Untuk mencari nilai tertinggi dari data nilai ujian, kita memakai fungsi...",o:["MAX","MIN","COUNT","SUM"],a:0},
-  {t:"pg",c:"Microsoft Excel",q:"Jika cell A1 berisi 5 dan cell B1 berisi 7, maka hasil rumus =A1+B1 adalah...",o:["57","35","12","2"],a:2},
-  {t:"pg",c:"Microsoft Excel",q:"Satu file Excel yang berisi beberapa lembar kerja disebut...",o:["Cell","Workbook","Column","Formula"],a:1},
-  {t:"pg",c:"Microsoft Excel",q:"Rumus =SUM(B2:B6) akan menjumlahkan...",o:["Hanya cell B2 dan B6","Cell B2 sampai B6","Semua cell di kolom A","Cell B2 dikali B6"],a:1},
-  {t:"pg",c:"Microsoft Excel",q:"Untuk mencari nilai terkecil dari sekumpulan angka, kita memakai fungsi...",o:["MAX","SUM","MIN","AVERAGE"],a:2},
-
-  // VS Code & HTML (5)
-  {t:"pg",c:"VS Code & HTML",q:"Visual Studio Code (VS Code) adalah aplikasi yang digunakan untuk...",o:["Menulis dan mengedit kode program","Mengedit foto","Membuat presentasi","Mengolah angka"],a:0},
-  {t:"pg",c:"VS Code & HTML",q:"HTML adalah singkatan dari...",o:["High Text Machine Language","HyperText Markup Language","Home Tool Making Language","Hyper Transfer Mobile Link"],a:1},
-  {t:"pg",c:"VS Code & HTML",q:"Tag HTML untuk membuat judul dengan ukuran paling besar adalah...",o:["<p>","<h6>","<h1>","<br>"],a:2},
-  {t:"pg",c:"VS Code & HTML",q:"Agar sebuah file dapat dibuka di browser sebagai halaman web, nama filenya diakhiri dengan...",o:[".docx",".html",".xlsx",".mp3"],a:1},
-  {t:"pg",c:"VS Code & HTML",q:"Tag HTML yang digunakan untuk membuat paragraf adalah...",o:["<p>","<a>","<img>","<h1>"],a:0},
-
-  // Esai HTML (5)
-  {t:"essay",c:"Esai HTML",q:"Jelaskan apa yang dimaksud dengan HTML dan apa fungsinya dalam pembuatan website!"},
-  {t:"essay",c:"Esai HTML",q:"Tuliskan struktur dasar dokumen HTML yang benar!"},
-  {t:"essay",c:"Esai HTML",q:"Jelaskan perbedaan antara tag <head> dan tag <body>!"},
-  {t:"essay",c:"Esai HTML",q:"Tuliskan kode HTML untuk menampilkan judul \"Website Saya\" dan paragraf \"Selamat datang di website saya\"!"},
-  {t:"essay",c:"Esai HTML",q:"Jelaskan fungsi tag <a>, <img>, dan <p> dalam HTML!"}
+const questions=[
+["MS Word","Microsoft Word digunakan untuk ...",["Mengolah dokumen teks","Mengolah angka","Mengedit video","Membuat animasi"],0],
+["MS Word","Shortcut menyimpan dokumen adalah ...",["Ctrl + P","Ctrl + S","Ctrl + C","Ctrl + V"],1],
+["MS Word","Shortcut menebalkan teks adalah ...",["Ctrl + B","Ctrl + I","Ctrl + U","Ctrl + Z"],0],
+["MS Word","Fitur untuk memiringkan teks disebut ...",["Bold","Italic","Underline","Align"],1],
+["MS Word","Ekstensi dokumen Word modern adalah ...",[".xlsx",".docx",".pptx",".html"],1],
+["MS Word","Shortcut menyalin teks adalah ...",["Ctrl + X","Ctrl + V","Ctrl + C","Ctrl + A"],2],
+["MS Word","Mengatur jarak antarbaris menggunakan ...",["Line Spacing","WordArt","Page Color","Find"],0],
+["MS Word","Membuat teks bergaris bawah menggunakan ...",["Bold","Italic","Highlight","Underline"],3],
+["MS Word","Shortcut mencetak dokumen adalah ...",["Ctrl + N","Ctrl + P","Ctrl + O","Ctrl + F"],1],
+["MS Word","Fitur pemeriksa ejaan adalah ...",["Mail Merge","Page Border","Spelling & Grammar","Page Number"],2],
+["MS Excel","Excel terutama digunakan untuk ...",["Mengedit video","Mengolah data dan angka","Membuat animasi","Mengedit suara"],1],
+["MS Excel","Pertemuan baris dan kolom disebut ...",["Sheet","Workbook","Cell","Range"],2],
+["MS Excel","Rumus Excel diawali tanda ...",["=","#","&","%"],0],
+["MS Excel","Fungsi penjumlahan adalah ...",["COUNT","MAX","AVERAGE","SUM"],3],
+["MS Excel","Fungsi menghitung rata-rata adalah ...",["MIN","AVERAGE","SUM","IF"],1],
+["MS Excel","Kolom Excel ditandai dengan ...",["Angka","Simbol","Huruf","Warna"],2],
+["MS Excel","Baris Excel ditandai dengan ...",["Angka","Huruf","Simbol","Warna"],0],
+["MS Excel","Fungsi mencari nilai terbesar adalah ...",["MIN","SUM","COUNT","MAX"],3],
+["MS Excel","Ekstensi file Excel modern adalah ...",[".docx",".xlsx",".pptx",".txt"],1],
+["MS Excel","Rumus menjumlahkan A1 sampai A5 adalah ...",["=ADD(A1:A5)","=TOTAL(A1:A5)","=SUM(A1:A5)","=PLUS(A1:A5)"],2],
+["VS Code, HTML, Python","Visual Studio Code digunakan untuk ...",["Membuat dan mengedit kode","Mengolah angka saja","Presentasi saja","Mengedit foto saja"],0],
+["VS Code, HTML, Python","HTML digunakan untuk ...",["Mengolah database saja","Mengatur perangkat keras","Menyusun struktur halaman web","Membuat sistem operasi"],2],
+["VS Code, HTML, Python","Tag HTML untuk judul utama adalah ...",["<p>","<h1>","<img>","<br>"],1],
+["VS Code, HTML, Python","Ekstensi file Python adalah ...",[".html",".css",".js",".py"],3],
+["VS Code, HTML, Python","Perintah Python menampilkan teks adalah ...",["print()","show()","echo()","displayText()"],0]
 ];
 
-const PG_TOTAL = questions.filter(q => q.t === "pg").length; // 25
-const DURATION_MS = 30 * 60 * 1000;
-const KEY_RESULTS = "xaverius_quiz_demo";
-const KEY_PROGRESS = "xaverius_quiz_progress";
-const KEY_THEME = "xaverius_theme";
+const essays=[
+"Jelaskan pengertian HTML dan fungsinya dalam pembuatan website!",
+"Jelaskan perbedaan tag <head> dan <body>!",
+"Tuliskan struktur dasar dokumen HTML!",
+"Bagaimana kode HTML untuk membuat judul Website Saya dan paragraf Selamat Datang?",
+"Jelaskan fungsi tag <a>, <img>, dan <p>!"
+];
 
-/* ---------- Util ---------- */
-const $ = id => document.getElementById(id);
-function readJSON(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-  catch (e) { return fallback; }
-}
-function writeJSON(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-  catch (e) { return false; }
-}
+let participant={},answers={},position=0,seconds=1800,timer=null,finished=false;
 
-/* ---------- Tema ---------- */
-function updateThemeButton() {
-  const dark = document.documentElement.classList.contains("dark");
-  $("themeIcon").textContent = dark ? "☀️" : "🌙";
-  $("themeLabel").textContent = dark ? "Terang" : "Gelap";
-}
-$("themeToggle").addEventListener("click", () => {
-  const dark = document.documentElement.classList.toggle("dark");
-  try { localStorage.setItem(KEY_THEME, dark ? "dark" : "light"); } catch (e) {}
-  updateThemeButton();
-});
-updateThemeButton();
+const $=id=>document.getElementById(id);
 
-/* ---------- State ---------- */
-let state = null;       // {participant, answers, current, endTime}
-let timerInterval = null;
-let submitted = false;
-
-function saveProgress() { if (state && !submitted) writeJSON(KEY_PROGRESS, state); }
-
-/* ---------- Pendaftaran ---------- */
-function showFormError(msg) {
-  const el = $("formError");
-  el.textContent = msg;
-  el.classList.remove("hidden");
+function startExam(){
+ const first=$("first").value.trim(),last=$("last").value.trim(),email=$("email").value.trim();
+ if(!first||!last||!email){alert("Lengkapi semua data.");return}
+ participant={first,last,email};
+ $("register").classList.add("hidden");
+ $("exam").classList.remove("hidden");
+ render();
+ timer=setInterval(()=>{
+  seconds--;
+  $("timer").textContent=Math.floor(seconds/60).toString().padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
+  if(seconds<=0)finish();
+ },1000);
 }
 
-$("registrationForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  $("formError").classList.add("hidden");
-
-  const participant = {
-    firstName: $("firstName").value.trim(),
-    lastName: $("lastName").value.trim(),
-    email: $("email").value.trim()
-  };
-
-  if (!participant.firstName || !participant.lastName || !participant.email) {
-    showFormError("Lengkapi nama depan, nama belakang, dan email.");
-    return;
-  }
-  if (!$("email").checkValidity()) {
-    showFormError("Format email belum benar.");
-    return;
-  }
-
-  const already = readJSON(KEY_RESULTS, []).some(
-    r => r.participant && r.participant.email.toLowerCase() === participant.email.toLowerCase()
-  );
-  if (already) {
-    showFormError("Email ini sudah pernah mengerjakan ujian.");
-    return;
-  }
-
-  state = { participant, answers: {}, current: 0, endTime: Date.now() + DURATION_MS };
-  saveProgress();
-  startExam();
-});
-
-/* ---------- Ujian ---------- */
-function startExam() {
-  $("registration").classList.add("hidden");
-  $("exam").classList.remove("hidden");
-  renderQuestion();
-  tick();
-  timerInterval = setInterval(tick, 1000);
-}
-
-function tick() {
-  const remaining = Math.max(0, Math.round((state.endTime - Date.now()) / 1000));
-  const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-  const s = String(remaining % 60).padStart(2, "0");
-  const timer = $("timer");
-  timer.textContent = m + ":" + s;
-  const low = remaining <= 300;
-  timer.classList.toggle("text-red-600", low);
-  timer.classList.toggle("dark:text-red-400", low);
-  timer.classList.toggle("text-indigo-700", !low);
-  timer.classList.toggle("dark:text-indigo-300", !low);
-  if (remaining <= 0) submitExam();
-}
-
-function isAnswered(i) {
-  const a = state.answers[i];
-  return a !== undefined && a !== null && String(a).trim() !== "";
-}
-
-function renderNav() {
-  const grid = $("navGrid");
-  grid.replaceChildren();
-  questions.forEach((_, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = i + 1;
-    b.setAttribute("aria-label", "Soal " + (i + 1));
-    let cls = "w-9 h-9 rounded-lg text-sm font-medium border ";
-    cls += isAnswered(i)
-      ? "bg-indigo-600 text-white border-indigo-600 "
-      : "border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 ";
-    if (i === state.current) cls += "ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900 ";
-    b.className = cls;
-    b.addEventListener("click", () => { state.current = i; saveProgress(); renderQuestion(); });
-    grid.appendChild(b);
+function render(){
+ const root=$("question");root.replaceChildren();
+ $("progress").textContent="Soal "+(position+1)+" dari 30";
+ if(position<25){
+  const q=questions[position];
+  const h=document.createElement("h3");h.textContent=q[0];root.appendChild(h);
+  const p=document.createElement("p");p.textContent=(position+1)+". "+q[1];root.appendChild(p);
+  q[2].forEach((option,i)=>{
+   const label=document.createElement("label");label.className="option";
+   const radio=document.createElement("input");radio.type="radio";radio.name="answer";radio.checked=answers[position]===i;
+   radio.onchange=()=>answers[position]=i;
+   label.append(radio,document.createTextNode(String.fromCharCode(65+i)+". "+option));root.appendChild(label);
   });
+ }else{
+  const i=position-25;
+  const h=document.createElement("h3");h.textContent="Esai HTML";root.appendChild(h);
+  const p=document.createElement("p");p.textContent=(position+1)+". "+essays[i];root.appendChild(p);
+  const area=document.createElement("textarea");area.rows=7;area.maxLength=5000;area.placeholder="Tuliskan jawaban...";
+  area.value=answers[position]||"";
+  area.oninput=()=>answers[position]=area.value;
+  root.appendChild(area);
+ }
+ $("prev").disabled=position===0;
+ $("next").classList.toggle("hidden",position===29);
+ $("finish").classList.toggle("hidden",position!==29);
 }
 
-function renderQuestion() {
-  const i = state.current;
-  const q = questions[i];
-  $("progress").textContent = "Soal " + (i + 1) + " dari " + questions.length;
-
-  const container = $("questionContainer");
-  container.replaceChildren();
-
-  const cat = document.createElement("p");
-  cat.className = "text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2";
-  cat.textContent = q.c + (q.t === "essay" ? " (esai)" : "");
-  container.appendChild(cat);
-
-  const title = document.createElement("h2");
-  title.className = "text-lg sm:text-xl font-bold mb-5 leading-snug";
-  title.textContent = q.q;
-  container.appendChild(title);
-
-  if (q.t === "pg") {
-    q.o.forEach((option, index) => {
-      const selected = state.answers[i] === index;
-      const label = document.createElement("label");
-      label.className = "flex items-start gap-3 p-3 my-2 rounded-xl border cursor-pointer transition-colors " +
-        (selected
-          ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-950 dark:border-indigo-400"
-          : "border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800");
-
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "answer";
-      radio.value = index;
-      radio.className = "mt-1 accent-indigo-600";
-      radio.checked = selected;
-      radio.addEventListener("change", () => {
-        state.answers[i] = index;
-        saveProgress();
-        renderQuestion();
-      });
-
-      const text = document.createElement("span");
-      text.textContent = String.fromCharCode(65 + index) + ". " + option;
-
-      label.append(radio, text);
-      container.appendChild(label);
-    });
-  } else {
-    const textarea = document.createElement("textarea");
-    textarea.className = "w-full p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm";
-    textarea.rows = 8;
-    textarea.maxLength = 5000;
-    textarea.placeholder = "Tulis jawabanmu di sini...";
-    textarea.value = state.answers[i] || "";
-    textarea.addEventListener("input", () => {
-      state.answers[i] = textarea.value;
-      saveProgress();
-      renderNavOnly();
-    });
-    container.appendChild(textarea);
-  }
-
-  $("previous").disabled = i === 0;
-  $("next").classList.toggle("hidden", i === questions.length - 1);
-  $("finish").classList.toggle("hidden", i !== questions.length - 1);
-  renderNav();
+function move(n){
+ position=Math.max(0,Math.min(29,position+n));render();
 }
 
-// Saat mengetik esai, hanya perbarui navigasi (agar kursor tidak hilang)
-function renderNavOnly() { renderNav(); }
-
-$("previous").addEventListener("click", () => {
-  if (state.current > 0) { state.current--; saveProgress(); renderQuestion(); window.scrollTo(0, 0); }
-});
-$("next").addEventListener("click", () => {
-  if (state.current < questions.length - 1) { state.current++; saveProgress(); renderQuestion(); window.scrollTo(0, 0); }
-});
-$("finish").addEventListener("click", () => {
-  const blank = questions.filter((_, i) => !isAnswered(i)).length;
-  const msg = blank > 0
-    ? "Masih ada " + blank + " soal yang belum dijawab. Yakin ingin mengumpulkan?"
-    : "Apakah kamu yakin ingin mengumpulkan ujian?";
-  if (confirm(msg)) submitExam();
-});
-
-/* ---------- Kumpulkan ---------- */
-function submitExam() {
-  if (submitted || !state) return;
-  submitted = true;
-  clearInterval(timerInterval);
-
-  let score = 0;
-  const details = questions.map((q, i) => {
-    const ans = state.answers[i];
-    if (q.t === "pg") {
-      const correct = ans === q.a;
-      if (correct) score++;
-      return { type: "pg", category: q.c, q: q.q, options: q.o, answer: ans === undefined ? null : ans, key: q.a, correct };
-    }
-    return { type: "essay", category: q.c, q: q.q, answer: ans || "" };
-  });
-
-  const result = {
-    id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
-    participant: state.participant,
-    details,
-    grades: {},               // penilaian esai oleh guru: {indeksSoal: true/false}
-    score,
-    totalPG: PG_TOTAL,
-    submittedAt: new Date().toISOString()
-  };
-
-  /*
-    DEMO LOKAL: data disimpan di browser perangkat ini.
-    Agar guru bisa melihat hasil dari perangkat siswa lain,
-    sambungkan ke backend (misalnya Supabase).
-  */
-  const all = readJSON(KEY_RESULTS, []);
-  all.push(result);
-  const ok = writeJSON(KEY_RESULTS, all);
-  if (!ok) alert("Penyimpanan lokal gagal. Beritahu gurumu.");
-
-  try { localStorage.removeItem(KEY_PROGRESS); } catch (e) {}
-
-  $("exam").classList.add("hidden");
-  $("result").classList.remove("hidden");
-  $("progress").textContent = "Selesai";
-  $("timer").textContent = "";
-  $("resultScore").textContent = score + " / " + PG_TOTAL;
-  $("resultText").textContent = "Persentase: " + Math.round(score / PG_TOTAL * 100) + "%";
+async function finish(){
+ if(finished)return;
+ const missing=[];
+ for(let i=0;i<25;i++)if(answers[i]===undefined)missing.push(i+1);
+ for(let i=25;i<30;i++)if(!String(answers[i]||"").trim())missing.push(i+1);
+ if(missing.length&&seconds>0){
+  alert("Soal belum dijawab: "+missing.join(", "));
+  return;
+ }
+ if(seconds>0&&!confirm("Kumpulkan semua jawaban?"))return;
+ finished=true;clearInterval(timer);
+ $("finish").disabled=true;
+ $("message").textContent="Mengirim jawaban ke database...";
+ const score=questions.reduce((sum,q,i)=>sum+(answers[i]===q[3]?1:0),0);
+ const essayAnswers=essays.map((_,i)=>answers[i+25]||"");
+ const {error}=await db.from("hasil_ujian").insert({
+  nama_depan:participant.first,nama_belakang:participant.last,
+  email:participant.email,nilai_pg:score,total_pg:25,
+  jawaban_pg:Object.fromEntries(questions.map((_,i)=>[i,answers[i]??null])),
+  jawaban_esai:essayAnswers
+ });
+ if(error){
+  finished=false;$("finish").disabled=false;
+  $("message").textContent="Gagal mengirim: "+error.message;
+  return;
+ }
+ $("exam").classList.add("hidden");$("done").classList.remove("hidden");
+ $("message").textContent="";
 }
-
-/* ---------- Lanjutkan jika halaman di-refresh ---------- */
-(function resume() {
-  const saved = readJSON(KEY_PROGRESS, null);
-  if (!saved || !saved.participant || !saved.endTime) return;
-  state = saved;
-  if (Date.now() >= state.endTime) {
-    $("registration").classList.add("hidden");
-    submitExam();
-  } else {
-    startExam();
-  }
-})();
 </script>
 </body>
- </html>
+</html>
