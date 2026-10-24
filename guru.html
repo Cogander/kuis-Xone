@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Guru | Xaverius Quiz</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+
+<header class="bg-indigo-700 p-5 text-center">
+<h1 class="text-2xl font-bold">DASHBOARD GURU</h1>
+<p>SMP Xaverius 1 Palembang</p>
+</header>
+
+<main class="max-w-6xl mx-auto p-5">
+<section class="bg-slate-900 rounded-xl p-5 mt-5">
+<h2 class="text-xl font-bold mb-4">Hasil Peserta</h2>
+
+<div class="flex flex-wrap gap-3 mb-5">
+<input id="search" placeholder="Cari nama atau email..."
+class="p-3 rounded text-black flex-1">
+
+<button onclick="loadResults()"
+class="bg-indigo-600 p-3 rounded">
+Muat Ulang
+</button>
+
+<button onclick="exportCSV()"
+class="bg-green-600 p-3 rounded">
+Ekspor CSV
+</button>
+</div>
+
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-slate-700">
+<th class="p-3">Nama</th>
+<th class="p-3">Email</th>
+<th class="p-3">Nilai PG</th>
+<th class="p-3">Esai</th>
+<th class="p-3">Tanggal</th>
+<th class="p-3">Detail</th>
+</tr>
+</thead>
+<tbody id="results"></tbody>
+</table>
+</div>
+
+<p id="status" class="mt-4 text-slate-400"></p>
+</section>
+
+<section id="details" class="hidden bg-slate-900 rounded-xl p-5 mt-5">
+<h2 class="text-xl font-bold mb-4">Detail Jawaban Peserta</h2>
+<div id="detailContent"></div>
+<button onclick="document.getElementById('details').classList.add('hidden')"
+class="bg-slate-700 p-3 rounded mt-4">
+Tutup
+</button>
+</section>
+</main>
+
+<script>
+let allResults = [];
+
+function loadResults() {
+ try {
+  allResults = JSON.parse(
+   localStorage.getItem("xaverius_quiz_demo") || "[]"
+  );
+ } catch(error) {
+  allResults = [];
+ }
+
+ renderResults();
+}
+
+function renderResults() {
+ const search = document.getElementById("search").value.toLowerCase();
+ const tbody = document.getElementById("results");
+ tbody.replaceChildren();
+
+ const filtered = allResults.filter(r => {
+  const name = `${r.participant.firstName} ${r.participant.lastName}`.toLowerCase();
+  return name.includes(search) || r.participant.email.toLowerCase().includes(search);
+ });
+
+ filtered.forEach((r,index) => {
+  const tr = document.createElement("tr");
+  tr.className = "border-b border-slate-800";
+
+  const values = [
+   `${r.participant.firstName} ${r.participant.lastName}`,
+   r.participant.email,
+   `${r.score}/${r.totalPG} (${Math.round(r.score/r.totalPG*100)}%)`,
+   "Perlu dinilai",
+   new Date(r.submittedAt).toLocaleString("id-ID")
+  ];
+
+  values.forEach(value => {
+   const td = document.createElement("td");
+   td.className = "p-3";
+   td.textContent = value;
+   tr.appendChild(td);
+  });
+
+  const td = document.createElement("td");
+  td.className = "p-3";
+  const button = document.createElement("button");
+  button.textContent = "Lihat";
+  button.className = "bg-indigo-600 p-2 rounded";
+  button.addEventListener("click",() => showDetails(r));
+  td.appendChild(button);
+  tr.appendChild(td);
+
+  tbody.appendChild(tr);
+ });
+
+ document.getElementById("status").textContent =
+  `Menampilkan ${filtered.length} hasil.`;
+}
+
+function showDetails(r) {
+ const section = document.getElementById("details");
+ const content = document.getElementById("detailContent");
+ content.replaceChildren();
+
+ const heading = document.createElement("h3");
+ heading.className = "font-bold mb-3";
+ heading.textContent =
+  `${r.participant.firstName} ${r.participant.lastName}`;
+ content.appendChild(heading);
+
+ const questions = [
+ "Microsoft Word: fungsi utama",
+ "Microsoft Word: shortcut menyimpan",
+ "Microsoft Word: shortcut bold",
+ "Microsoft Word: italic",
+ "Microsoft Word: ekstensi dokumen",
+ "Microsoft Word: menyalin teks",
+ "Microsoft Word: line spacing",
+ "Microsoft Word: underline",
+ "Microsoft Word: mencetak",
+ "Microsoft Word: pemeriksaan ejaan",
+ "Excel: fungsi utama",
+ "Excel: cell",
+ "Excel: tanda awal rumus",
+ "Excel: SUM",
+ "Excel: AVERAGE",
+ "Excel: kolom",
+ "Excel: baris",
+ "Excel: nilai terbesar",
+ "Excel: ekstensi file",
+ "Excel: rumus penjumlahan",
+ "VS Code",
+ "HTML",
+ "Tag judul HTML",
+ "Ekstensi Python",
+ "Perintah print Python",
+ "Esai HTML 1",
+ "Esai HTML 2",
+ "Esai HTML 3",
+ "Esai HTML 4",
+ "Esai HTML 5"
+ ];
+
+ questions.forEach((question,index) => {
+  const div = document.createElement("div");
+  div.className = "border-b border-slate-700 py-3";
+
+  const title = document.createElement("p");
+  title.className = "font-bold";
+  title.textContent = `${index+1}. ${question}`;
+  div.appendChild(title);
+
+  const answer = document.createElement("p");
+  answer.className = "text-slate-300 mt-1";
+
+  if(r.answers[index] === undefined || r.answers[index] === "") {
+   answer.textContent = "Belum dijawab";
+  } else if(index < 25) {
+   answer.textContent = "Pilihan: " +
+    String.fromCharCode(65+Number(r.answers[index]));
+  } else {
+   answer.textContent = r.answers[index];
+  }
+
+  div.appendChild(answer);
+  content.appendChild(div);
+ });
+
+ section.classList.remove("hidden");
+}
+
+function exportCSV() {
+ const rows = [["Nama","Email","Nilai PG","Total PG","Tanggal"]];
+
+ allResults.forEach(r => {
+  rows.push([
+   `${r.participant.firstName} ${r.participant.lastName}`,
+   r.participant.email,
+   r.score,
+   r.totalPG,
+   r.submittedAt
+  ]);
+ });
+
+ const csv = rows.map(row =>
+  row.map(value => {
+   let s = String(value ?? "");
+   if(/^[=+\-@]/.test(s)) s = "'" + s;
+   return '"' + s.replace(/"/g,'""') + '"';
+  }).join(",")
+ ).join("\r\n");
+
+ const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+ const url = URL.createObjectURL(blob);
+ const a = document.createElement("a");
+ a.href = url;
+ a.download = "hasil-ujian-xaverius.csv";
+ a.click();
+ URL.revokeObjectURL(url);
+}
+
+document.getElementById("search").addEventListener("input",renderResults);
+loadResults();
+</script>
+</body>
+</html>
